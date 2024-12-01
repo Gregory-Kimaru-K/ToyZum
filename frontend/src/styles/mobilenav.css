@@ -21,11 +21,15 @@
     position: fixed;
     bottom: 0;
     z-index: 30;
-    background: linear-gradient(180deg, var(--dark-blue), var(--blue1), var(--blue2));
+    background: var(--white);
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-top: 2px solid var(--blue2);
 }
 
 .dark .botnav {
-    background: linear-gradient(180deg, var(--dark-blue) 100%, var(--blue1));
+    background: var(--black);
+    border-top: 2px solid var(--blue2);
 }
 
 .botnav .icons {
@@ -36,6 +40,20 @@
 .botnav .icon {
     width: 40px;
     height: 40px;
-    fill: var(--white);
+    fill: var(--blue2);
+    stroke: var(--blue2);
     cursor: pointer;
+}
+
+.botnav .card {
+    stroke: var(--white);
+}
+
+.dark .botnav .icon {
+    fill: var(--white);
+    stroke: var(--white);
+}
+
+.dark .botnav .card {
+    stroke: var(--black);
 }

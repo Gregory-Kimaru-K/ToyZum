@@ -4,6 +4,7 @@ import Cart from '../../assets/cart-outline.svg?react'
 import Card from '../../assets/card-outline.svg?react'
 import Info from '../../assets/info-outline.svg?react'
 import '../../styles/mobilenav.css'
+import { NavLink } from 'react-router-dom'
 
 function Mobilebar() {
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 600)
@@ -18,17 +19,18 @@ function Mobilebar() {
         })
     }, [])
     return (
-        <div className='botnav'>
+        <>
             {isMobile ? (
-                <div className='icons'>
-                    <Home className='icon'/>
-                    <Cart className='icon'/>
-                    <Card className='icon'/>
-                    <Info className='icon'/>
-
+                <div className='botnav'>
+                    <div className='icons'>
+                        <NavLink to={'/'}><Home className='icon'/></NavLink>
+                        <NavLink to={'/cart'}><Cart className='icon'/></NavLink>
+                        <NavLink to={'/purchases'}><Card className='icon card'/></NavLink>
+                        <NavLink to={'/about'}><Info className='icon'/></NavLink>
+                    </div>
                 </div>
             ): (<></>)}
-        </div>
+        </>
     )
 }
 

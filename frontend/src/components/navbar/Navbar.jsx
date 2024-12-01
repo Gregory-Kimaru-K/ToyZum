@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Logo from '../../assets/toy7_edit2.png'
 import '../../styles/navbar.css'
 import PersonIcon from '../../assets/person-outline.svg?react'
+import { NavLink } from 'react-router-dom';
 
 function Navbar() {
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 600);
@@ -16,19 +17,20 @@ function Navbar() {
         <div className='navbar'>
             {isMobile ? (
                 <>
-                    <img src={Logo} alt='Toy_Zum Logo' />
-                    <PersonIcon className='profile' />
+                    <NavLink to={'/'}><img src={Logo} alt='Toy_Zum Logo' /></NavLink>
+                    <NavLink to={'/profile'}><PersonIcon className='profile' /></NavLink>
                 </>
                 
             ):(
                 <>
                     <img src={Logo} alt='Toy_Zum Logo' />
                     <div className='mininav'>
-                        <p>Home</p>
-                        <p>About Us</p>
-                        <p>My Purchases</p>
+                        <NavLink to={'/'}>Home</NavLink>
+                        <NavLink to={'/cart'}>Cart</NavLink>
+                        <NavLink to={'/purchases'}>My Purchases</NavLink>
+                        <NavLink to={'/about'}>About Us</NavLink>
                     </div>
-                    <PersonIcon className='profile' />
+                    <NavLink to={'/profile'}><PersonIcon className='profile' /></NavLink>
                 </>
             )}
         </div>
