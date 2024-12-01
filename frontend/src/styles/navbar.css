@@ -18,6 +18,7 @@
 
 .dark {
     background: var(--black);
+    color: var(--white);
 }
 
 .navbar {
@@ -27,9 +28,9 @@
     display: flex;
     justify-content:space-between;
     align-items: center;
-    background: var(--white);
-    border-bottom-left-radius: 20px;
-    border-bottom-right-radius: 20px;
+    background: var(--blue2);
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
     border-bottom: 2px solid var(--blue2);
 }
 
@@ -60,9 +61,29 @@
     -moz-box-shadow: 0px 0px 30px 1px rgb(15, 83, 134, 0.6);
 }
 
-.navbar .mininav p {
+.navbar .mininav a {
+    position: relative;
+    text-decoration: none;
+    color: var(--black);
     cursor: pointer;
 }
+
+.navbar .mininav a::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    height: 3px;
+    width: 0;
+    background: var(--brown1);
+    border-radius: 5px;
+    transition: 0.5s;
+}
+
+.navbar .mininav a.active::before {
+    width: 100%;
+}
+
 
 .navbar .profile {
     position: relative;
@@ -71,10 +92,14 @@
     width: 56px;
     height: 56px;
     fill: var(--white);
-    background: var(--blue2);
+    background: var(--blue1);
     border-radius: 50%;
     padding: 8px;
     cursor: pointer;
+}
+
+.dark .navbar .profile {
+    background: var(--blue2);
 }
 
 

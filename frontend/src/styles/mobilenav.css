@@ -21,7 +21,7 @@
     position: fixed;
     bottom: 0;
     z-index: 30;
-    background: var(--white);
+    background: var(--blue2);
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
     border-top: 2px solid var(--blue2);
@@ -40,13 +40,13 @@
 .botnav .icon {
     width: 40px;
     height: 40px;
-    fill: var(--blue2);
-    stroke: var(--blue2);
+    fill: var(--white);
+    stroke: var(--white);
     cursor: pointer;
 }
 
 .botnav .card {
-    stroke: var(--white);
+    stroke: var(--blue2);
 }
 
 .dark .botnav .icon {
