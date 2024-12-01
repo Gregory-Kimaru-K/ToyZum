@@ -1,0 +1,81 @@
+:root {
+    --dark-blue: #041C42;
+    --blue1: #0F5386;
+    --blue2: #40D3E2;
+    --brown1: #913313;
+    --brown2: #EC9E49;
+    --white: #ffffff;
+    --black: #000000;
+    --cards: #1C2841;
+}
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+
+.dark {
+    background: var(--black);
+}
+
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: linear-gradient(360deg, var(--dark-blue), var(--blue1), var(--blue2));
+    display: flex;
+    justify-content:space-between;
+    align-items: center;
+}
+
+.dark .navbar {
+    background: linear-gradient(360deg, var(--dark-blue) 30%, var(--blue1));
+}
+
+.navbar img {
+    position: relative;
+    left: 4%;
+    width: 80px;
+    height: 80px;
+    cursor: pointer;
+}
+
+.navbar .mininav {
+    height: 100%;
+    padding: 12px 16px;
+    display: flex;
+    gap: 2rem;
+    background: var(--brown2);
+    border-radius: 20px;
+}
+
+.navbar .mininav p {
+    cursor: pointer;
+}
+
+.navbar .profile {
+    position: relative;
+    right: 4%;
+    stroke: none;
+    width: 56px;
+    height: 56px;
+    fill: var(--white);
+    background: var(--dark-blue);
+    border-radius: 50%;
+    padding: 8px;
+    cursor: pointer;
+}
+
+
+@media screen and (max-width: 600px) {
+    .navbar img {
+        width: 56px;
+        height: 56px;
+    }
+    .navbar .profile {
+        width: 48px;
+        height: 48px;
+    }
+}

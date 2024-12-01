@@ -1,0 +1,34 @@
+Pages:
+	1. Products display.
+		a) View all products.
+		b) View one product with carousel view.
+		c) Add to cart.
+
+	2. Admin Portal:
+		a) Login.
+		b) Sign up.
+		c) Profile.
+		d) Update Profile.
+
+	3. Add to Cart:
+		a) Buy Product.
+		b) View products.
+
+	4. About:
+		a) Terms of service.
+		b) About Us.
+	
+	5. My Purchases.
+		a) View Purchase.
+		b) Purchase Item again.
+
+COLOURS:
+	1) BLUE COLOURS:
+		a) Dark-blue - 041C42
+		b) blue1 - 0F5386
+		c) blue2 - 40D3E2
+		d) brown1 - 913313
+		e) brown2 - EC9E49
+		d) white - ffffff
+		e) black - 000000
+	

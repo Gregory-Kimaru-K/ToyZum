@@ -1,0 +1,41 @@
+:root {
+    --dark-blue: #041C42;
+    --blue1: #0F5386;
+    --blue2: #40D3E2;
+    --brown1: #913313;
+    --brown2: #EC9E49;
+    --white: #ffffff;
+    --black: #000000;
+    --cards: #1C2841;
+}
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+
+.botnav {
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    z-index: 30;
+    background: linear-gradient(180deg, var(--dark-blue), var(--blue1), var(--blue2));
+}
+
+.dark .botnav {
+    background: linear-gradient(180deg, var(--dark-blue) 100%, var(--blue1));
+}
+
+.botnav .icons {
+    display: flex;
+    justify-content: space-around;
+}
+
+.botnav .icon {
+    width: 40px;
+    height: 40px;
+    fill: var(--white);
+    cursor: pointer;
+}
