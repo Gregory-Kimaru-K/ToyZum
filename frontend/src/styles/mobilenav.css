@@ -21,15 +21,17 @@
     position: fixed;
     bottom: 0;
     z-index: 30;
-    background: var(--blue2);
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
+    background: color-mix(in srgb, var(--blue2) 80%, var(--white));
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
     border-top: 2px solid var(--blue2);
 }
 
 .dark .botnav {
     background: var(--black);
     border-top: 2px solid var(--blue2);
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
 }
 
 .botnav .icons {
@@ -47,6 +49,10 @@
 
 .botnav .card {
     stroke: var(--blue2);
+}
+
+.botnav .set {
+    width: 36px;
 }
 
 .dark .botnav .icon {

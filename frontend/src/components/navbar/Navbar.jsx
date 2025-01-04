@@ -28,7 +28,7 @@ function Navbar() {
                         <NavLink to={'/home'}>Home</NavLink>
                         <NavLink to={'/cart'}>Cart</NavLink>
                         <NavLink to={'/purchases'}>My Purchases</NavLink>
-                        <NavLink to={'/about'}>About Us</NavLink>
+                        <NavLink to={'/settings'}>Settings</NavLink>
                     </div>
                     <Link to={'/profile'}><PersonIcon className='profile' /></Link>
                 </>

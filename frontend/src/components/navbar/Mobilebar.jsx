@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Home from '../../assets/home-outline.svg?react'
 import Cart from '../../assets/cart-outline.svg?react'
 import Card from '../../assets/card-outline.svg?react'
-import Info from '../../assets/info-outline.svg?react'
+import Settings from '../../assets/settings-sharp.svg?react'
 import '../../styles/mobilenav.css'
 import { Link } from 'react-router-dom'
 
@@ -26,7 +26,7 @@ function Mobilebar() {
                         <Link to={'/home'}><Home className='icon'/></Link>
                         <Link to={'/cart'}><Cart className='icon'/></Link>
                         <Link to={'/purchases'}><Card className='icon card'/></Link>
-                        <Link to={'/about'}><Info className='icon'/></Link>
+                        <Link to={'/about'}><Settings className='icon set'/></Link>
                     </div>
                 </div>
             ): (<></>)}
