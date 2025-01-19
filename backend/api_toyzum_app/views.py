@@ -39,10 +39,14 @@ def custom_user_update(request, eml):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def product_view_create(request):
-    if request.user.role != 'SELLER' or request.user.role !='SUPERUSER':
+    if request.user.role not in ['SUPERUSER', 'SELLER']:
         return Response({"error": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)
     
-    serializer = ProductSerializer(data=request.data)
+    data = request.data.copy()
+    images = request.FILES.getlist('images')
+    data['seller'] = request.user.id
+    data['images'] = images
+    serializer = ProductSerializer(data=data)
 
     if serializer.is_valid():
         serializer.save()

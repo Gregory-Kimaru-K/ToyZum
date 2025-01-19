@@ -1,5 +1,13 @@
 from rest_framework import serializers
 from .models import CustomUser, Product
+from pymongo import MongoClient
+from gridfs import GridFS
+from backend.settings import MONGO_URI
+
+
+mongo_client = MongoClient(MONGO_URI)
+db = mongo_client['toyzum']
+fs = GridFS(db)
 
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -30,6 +38,15 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def create(self, validated_data):
+        images = validated_data.pop('images', [])
+        images_ids = []
+
+        for image in images:
+            image_id = fs.put(image, content_type='image/png')
+            images_ids.append(str(image_id))
+
+        validated_data['images'] = images_ids
+
         product = Product.objects.create(**validated_data)
         return product
     
