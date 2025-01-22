@@ -21,6 +21,7 @@ class CustomUserManager(BaseUserManager):
     def create_superuser(self, email, phone_number, first_name, last_name, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('role', "SUPERUSER")
 
         return self.create_user(email, phone_number, first_name, last_name, password, **extra_fields)
 
@@ -46,13 +47,24 @@ class CustomUser(AbstractBaseUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['phone_number', 'first_name', 'last_name']
 
+class Category(models.Model):
+    name = models.CharField(max_length=100)
+    image = models.BinaryField(null=True, blank=True)
+
 class Product(models.Model):
+    GENDER_CHOICES = [
+        ("BOY", "Boy"),
+        ("GIRL", "Girl"),
+        ("UNISEX", "Unisex")
+    ]
     name = models.CharField(max_length=50)
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     images = models.JSONField(default=list)
     quantity = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
     seller = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 
     def __str__(self):
