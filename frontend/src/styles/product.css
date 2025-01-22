@@ -1,0 +1,118 @@
+:root {
+    --dark-blue: #041C42;
+    --blue1: rgb(15, 83, 134);
+    --blue2: #40D3E2;
+    --brown1: #913313;
+    --brown2: #EC9E49;
+    --white: #ffffff;
+    --black: #000000;
+    --cards: #1C2841;
+    --orange: rgb(255,69,0);
+    --tomato:  rgb(255,99,71);
+    --crimson: rgb(220,20,60);
+}
+
+.add-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/*
+##########
+###############
+####################
+CUSTOM FILE UPLOAD
+####################
+###############
+##########
+*/
+
+.input-div {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 10px;
+    background: var(--brown2);
+    /* border: 2px solid var(--brown2); */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    /* box-shadow: 0px 0px 100px var(--brown2), inset 0px 0px 10px rgb(1, 235, 252),0px 0px 5px rgb(255, 255, 255); */
+}
+
+.icon {
+    color: var(--brown1);
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+.input {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer !important;
+}
+
+/*
+##########
+###############
+####################
+CUSTOM INPUT FIELDS
+####################
+###############
+##########
+*/
+
+.add_prod {
+    width: 100%;
+    margin-top: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 4rem;
+}
+
+.input_add_prod input,
+.input_add_prod textarea {
+    color: var(--black);
+    border-left: 2px solid var(--black);
+    border-bottom: 2px solid var(--black);
+}
+
+.input_add_prod span,
+.input_add_prod .desc {
+    color: var(--black);
+}
+
+
+.input_add_prod input:valid~span,
+.input_add_prod input:focus~span,
+.input_add_prod textarea:focus~.desc,
+.input_add_prod textarea:valid~.desc {
+    background: var(--black);
+    color: var(--white);
+}
+
+.input_add_prod input:valid,
+.input_add_prod input:focus,
+.input_add_prod textarea:focus,
+.input_add_prod textarea:valid {
+    border: 2px solid var(--black);
+    border-radius: 8px;
+}
+
+/*
+##########
+###############
+####################
+CUSTOM RADIO FIELDS
+####################
+###############
+##########
+*/
+

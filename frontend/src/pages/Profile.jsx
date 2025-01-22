@@ -1,10 +1,9 @@
 import React from 'react'
+import ProfileComp from '../components/body/ProfileComp'
 
 function Profile() {
   return (
-    <div>
-      <h1>Profile</h1>
-    </div>
+    <ProfileComp />
   )
 }
 

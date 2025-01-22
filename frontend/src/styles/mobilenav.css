@@ -1,12 +1,15 @@
 :root {
     --dark-blue: #041C42;
-    --blue1: #0F5386;
+    --blue1: rgb(15, 83, 134);
     --blue2: #40D3E2;
     --brown1: #913313;
     --brown2: #EC9E49;
     --white: #ffffff;
     --black: #000000;
     --cards: #1C2841;
+    --orange: rgb(255,69,0);
+    --tomato:  rgb(255,99,71);
+    --crimson: rgb(220,20,60);
 }
 
 * {

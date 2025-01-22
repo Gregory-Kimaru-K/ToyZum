@@ -7,6 +7,9 @@
     --white: #ffffff;
     --black: #000000;
     --cards: #1C2841;
+    --orange: rgb(255,69,0);
+    --tomato:  rgb(255,99,71);
+    --crimson: rgb(220,20,60);
 }
 
 * {
@@ -31,6 +34,7 @@
     background: color-mix(in srgb, var(--white) 20%, var(--blue2));
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
+    z-index: 10000;
 }
 
 .dark .navbar {
@@ -54,10 +58,12 @@
     display: flex;
     gap: 2rem;
     background: var(--white);
-    border-radius: 20px;
+    border-radius: 40px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0px 0px 30px 1px rgba(50, 50, 50, 0.6);
     -webkit-box-shadow: 0px 0px 30px 1px rgba(50, 50, 50, 0.6);
     -moz-box-shadow: 0px 0px 30px 1px rgba(50, 50, 50, 0.6);
+    font-size: 1rem;
 }
 
 .navbar .mininav a {
@@ -96,10 +102,10 @@
 
 .navbar .profile {
     position: relative;
-    right: 16%;
     stroke: none;
     width: 56px;
     height: 56px;
+    margin-right: 2%;
     fill: var(--white);
     background: var(--blue2);
     border-radius: 50%;
@@ -110,11 +116,34 @@
     -moz-box-shadow: 0px 0px 30px 1px rgba(50, 50, 50, 0.6);
 }
 
+.navbar .aprofile {
+    margin-right: 2%;
+}
+
 .dark .navbar .profile {
     background: var(--white);
     fill: var(--black);
 }
 
+.navbar .authbtn {
+    width: 12%;
+    height: 40px;
+    font-size: 1rem;
+    text-transform: uppercase;
+    margin-right: 2%;
+    background: linear-gradient(45deg, var(--orange) ,var(--tomato) ,var(--crimson));
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    background-size: 200%;
+    background-position: 0 0;
+    transition: background-position 1s ease, transform .5s ease;
+}
+
+.navbar .authbtn:hover {
+    background-position: 100% 0;
+    transform: scale(1.1);
+}
 
 @media screen and (max-width: 600px) {
     .navbar img {
@@ -124,5 +153,13 @@
     .navbar .profile {
         width: 48px;
         height: 48px;
+    }
+    .navbar .authbtn {
+        width: 32%;
+    }
+
+    .navbar .authbtn:active {
+        background-position: 100% 0;
+        transform: scale(1.1);
     }
 }
