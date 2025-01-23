@@ -1,9 +1,13 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 
 function Home() {
+  const navigate = useNavigate()
   return (
     <div>
-        <h1>Home</h1>
+        <div onClick={() => navigate('/home/category/create_category')}>
+          <h1>+++</h1>
+        </div>
     </div>
   )
 }

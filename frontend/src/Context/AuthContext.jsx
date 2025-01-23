@@ -15,8 +15,8 @@ export const AuthProvider = ({children}) => {
             const now = Date.now() / 1000
             if (now > parsedTokens.exp) {
                 localStorage.removeItem("authTokens");
-                authTokens(null);
-                return null
+                setAuthTokens(null);
+                return null;
             }
             return jwtDecode(parsedTokens.access)
         }
