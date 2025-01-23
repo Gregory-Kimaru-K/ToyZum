@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
-from .serializers import CustomUserSerializer, ProductSerializer
-from .models import CustomUser, Product
+from .serializers import CustomUserSerializer, ProductSerializer, CategorySerializer
+from .models import CustomUser, Product, Category
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -56,7 +56,7 @@ def product_view_create(request):
 
 class ProductView(APIView):
     permission_classes = [IsAuthenticated]
-    
+
     def put(self, pk, request):
         try:
             product = product.objects.get(pk=pk)
@@ -90,5 +90,36 @@ class ProductView(APIView):
 class CategoryView(APIView):
     permission_classes = [IsAdminUser]
 
-    def post(request):
-        pass
+    def post(self, request):
+        data = request.data
+        serializer = CategorySerializer(data=data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def put(self, request, pk):
+        try:
+            category = Category.objects.get(pk=pk)
+
+        except Category.DoesNotExist:
+            return Response({'error': "Category does not exist"}, status=status.HTTP_204_NO_CONTENT)
+        
+        serializer = CategorySerializer(category, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, pk):
+        try:
+            category = Category.objects.get(pk=pk)
+            category.delete()
+            return Response({'message': 'Deleted successfully'}, status=status.HTTP_200_OK)
+        
+        except Category.DoesNotExist:
+            return Response({"error": "Category does not exist"}, status=status.HTTP_400_BAD_REQUEST)
