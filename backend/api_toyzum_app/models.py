@@ -49,7 +49,7 @@ class CustomUser(AbstractBaseUser):
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
-    image = models.BinaryField(null=True, blank=True)
+    image = models.CharField(max_length=1000, null=True, blank=True)
 
 class Product(models.Model):
     GENDER_CHOICES = [
