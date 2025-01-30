@@ -52,6 +52,36 @@ def product_view_create(request):
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(['GET'])
+def get_product(request, pk):
+    try:
+        product = Product.objects.get(pk=pk)
+    
+    except Product.DoesNotExist:
+        return Response({"error": "Product does not exist"}, status=status.HTTP_404_NOT_FOUND)
+    
+    serializer = ProductSerializer(product)
+
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def get_products(request):
+    category_id = request.GET.get('category', None)
+
+    if not category_id:
+        return Response({"error": "Category id required"}, status=status.HTTP_400_BAD_REQUEST)
+
+    product = Product.objects.filter(category=category_id)
+
+    if not product.exists():
+        return Response({'error': "No product of this category found"}, status=status.HTTP_400_BAD_REQUEST)
+
+    serializer = ProductSerializer(product, many=True)
+
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 class ProductView(APIView):
     permission_classes = [IsAuthenticated]
 
