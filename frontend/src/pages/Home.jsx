@@ -19,14 +19,14 @@ function Home() {
 
   return (
     <div>
-        <div onClick={() => navigate('/home/category/create_category')}>
+        <div>
           {categories.map((category, index) => (
-            <>
-              <img key={index} src={category.image} alt='category_image' style={{width: '200px'}} />
+            <div key={index} onClick={() => navigate(`/home/category/${category.id}`)}>
+              <img src={category.image} alt='category_image' style={{width: '200px'}} />
               <p>{category.name}</p>
-            </>
+            </div>
           ))}
-          <h1>+++</h1>
+          <h1 onClick={() => navigate('/home/category/create_category')}>+++</h1>
         </div>
     </div>
   )

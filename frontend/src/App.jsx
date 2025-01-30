@@ -12,6 +12,7 @@ import ProductAdd from "./pages/ProductAdd"
 import HomeLayout from "./layout/HomeLayout"
 import CreateCategory from "./pages/CreateCategory"
 import CategoryLayout from "./layout/CategoryLayout"
+import CategoryProducts from "./pages/CategoryProducts"
 
 function App() {
   const routes = createBrowserRouter(
@@ -24,8 +25,9 @@ function App() {
             <Route path="product" element={<ProductAdd />} />
             <Route path="category" element={<CategoryLayout />}>
               <Route path="create_category" element={<CreateCategory />} />
+              <Route path=":categoryid" element={<CategoryProducts />} />
             </Route>
-            <Route path=":slug" element={<ProductDets />} />
+            <Route path=":productid" element={<ProductDets />} />
           </Route>
           <Route path="/cart" element={<Cart />} />
           <Route path="/settings" element={<Settings />} />
