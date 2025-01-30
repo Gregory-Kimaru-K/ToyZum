@@ -1,8 +1,10 @@
 import React, { useContext, useState } from 'react';
 import AuthContext from '../Context/Authcontext';
+import CategoryContext from '../Context/CategoryContext';
 
 function CreateCategory() {
     const { user } = useContext(AuthContext);
+    const { createCategory } = useContext(CategoryContext)
     const [FormData, setFormData] = useState({
         name: '',
         image: null,
@@ -12,7 +14,7 @@ function CreateCategory() {
         const file = event.target.files[0];
         if (file) {
             const reader = new FileReader();
-            reader.onloadend = () => {
+            reader.onloadend = () => { 
                 setFormData((prev) => ({
                     ...prev,
                     image: reader.result,
@@ -32,6 +34,8 @@ function CreateCategory() {
 
     const handleSubmit = () => {
         console.log('Formdata: ', FormData);
+        createCategory(FormData)
+
     };
 
     if (user?.role === 'SUPERUSER') {

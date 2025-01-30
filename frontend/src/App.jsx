@@ -12,7 +12,6 @@ import ProductAdd from "./pages/ProductAdd"
 import HomeLayout from "./layout/HomeLayout"
 import CreateCategory from "./pages/CreateCategory"
 import CategoryLayout from "./layout/CategoryLayout"
-import GetCategory from "./pages/GetCategory"
 
 function App() {
   const routes = createBrowserRouter(
@@ -25,7 +24,6 @@ function App() {
             <Route path="product" element={<ProductAdd />} />
             <Route path="category" element={<CategoryLayout />}>
               <Route path="create_category" element={<CreateCategory />} />
-              <Route path=":slug" element={<GetCategory />} />
             </Route>
             <Route path=":slug" element={<ProductDets />} />
           </Route>
@@ -41,7 +39,7 @@ function App() {
       </>
     )
   )
-  
+
   return (
       <RouterProvider router={routes} />
   )

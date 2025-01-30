@@ -25,8 +25,8 @@ function Mobilebar() {
                     <div className='icons'>
                         <Link to={'/home'}><Home className='icon'/></Link>
                         <Link to={'/cart'}><Cart className='icon'/></Link>
-                        <Link to={'/purchases'}><Card className='icon card'/></Link>
-                        <Link to={'/about'}><Settings className='icon set'/></Link>
+                        <Link to={'/purchases'}><Card className='icon cardi'/></Link>
+                        <Link to={'/settings'}><Settings className='icon set'/></Link>
                     </div>
                 </div>
             ): (<></>)}

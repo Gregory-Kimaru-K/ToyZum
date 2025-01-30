@@ -29,7 +29,7 @@ function Navbar() {
                     <Link to={'/home'}>
                         <img src={Logo} alt="Toy_Zum Logo" />
                     </Link>
-                    {authTokens ? (
+                    {localStorage.getItem('authTokens') ? (
                         <Link to={'/profile'} className="aprofile">
                             <PersonIcon className="profile" />
                         </Link>

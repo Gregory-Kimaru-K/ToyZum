@@ -93,7 +93,7 @@ export const AuthProvider = ({children}) => {
                 }
             }
         };
-        const interval = setInterval(checkTokenExpiration, 60000);
+        const interval = setInterval(checkTokenExpiration, 55*60*1000);
         return () => clearInterval(interval)
     }, [authTokens])
 
