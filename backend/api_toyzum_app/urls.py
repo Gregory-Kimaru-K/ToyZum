@@ -1,7 +1,7 @@
 from rest_framework_simplejwt.views import TokenRefreshView
 from .jwt_serializers import CustomTokenObtainPairView
 from django.urls import path
-from .views import custom_user_create, custom_user_update, product_view_create, ProductView
+from .views import custom_user_create, custom_user_update, product_view_create, ProductView, CategoryView, read_category
 
 urlpatterns = [
     path('token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
@@ -10,4 +10,7 @@ urlpatterns = [
     path('user/update/<str:eml>/', custom_user_update, name='custom_user_update'),
     path('product/create/', product_view_create, name='product_view_create'),
     path('product/<int:pk>/', ProductView.as_view(), name='product_view_update'),
+    path('category/', read_category, name='category_get'),
+    path('category/<int:pk>/', CategoryView.as_view(), name='category_view_update_delete'),
+    path('category/new_category/', CategoryView.as_view(), name='category_create'),
 ]

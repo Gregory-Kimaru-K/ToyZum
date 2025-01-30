@@ -42,10 +42,8 @@ def product_view_create(request):
     if request.user.role not in ['SUPERUSER', 'SELLER']:
         return Response({"error": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)
     
-    data = request.data.copy()
-    images = request.FILES.getlist('images')
+    data = request.data
     data['seller'] = request.user.id
-    data['images'] = images
     serializer = ProductSerializer(data=data)
 
     if serializer.is_valid():
@@ -80,25 +78,30 @@ class ProductView(APIView):
             if (request.user.role == 'SELLER' and request.user == product.seller) or request.user.role !='SUPERUSER':
                 product.delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
+
             else:
                 return Response({"error": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)
             
         except Product.DoesNotExist:
             return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
         
+@api_view(['GET'])
+def read_category(request):
+    categories = Category.objects.all()
+    serializer = CategorySerializer(categories, many=True)
+
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 class CategoryView(APIView):
     permission_classes = [IsAdminUser]
 
-    def post(self, request):
-        data = request.data
-        serializer = CategorySerializer(data=data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+    def post(self, request, *args, **kwargs):
+        name = request.data.get("name")
+        image = request.data.get("image")
         
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        category = Category.objects.create(name=name, image=image)
+        return Response({"message": "Category created successfully", "category_id": category.id})
+            
     
     def put(self, request, pk):
         try:
