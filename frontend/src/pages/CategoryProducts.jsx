@@ -18,6 +18,7 @@ function CategoryProducts() {
                 const data = await response.json()
                 setProducts(data)
             }
+
             catch (error) {
                 console.log("ERROR", error)
                 setProducts([])
@@ -35,7 +36,7 @@ function CategoryProducts() {
                         <div key={index} onClick={() => navigate(`/home/${product.id}`)}>
                             {fimage ? (
                                 <img src={fimage} alt={product.name} style={{width: "200px"}} />
-                            ): 
+                            ):
                             <p>no image found</p>}
                             <h4>{product.name}</h4>
                             <p>{product.description}</p>
