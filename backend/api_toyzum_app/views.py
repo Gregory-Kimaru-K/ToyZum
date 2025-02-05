@@ -160,18 +160,45 @@ class CategoryView(APIView):
         except Category.DoesNotExist:
             return Response({"error": "Category does not exist"}, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def create_order(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+
+    order = Order.objects.create(product=product, client=request.user)
+
+    serializer = OrderSerializer(order)
+
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_orders(request):
+    if request.user.role == ["SUPERUSER", "SELLER"]:
+        ordered_products = Order.objects.filter(product__seller = request.user)
+
+        if not ordered_products.exists():
+            return Response({"message": "No products found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = OrderSerializer(ordered_products, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    ordered_products = Order.objects.filter(client=request.user)
+    if not ordered_products.exists():
+        return Response({"message": "No products found"}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = OrderSerializer(ordered_products, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 class OrderView(APIView):
     permission_classes = [IsAuthenticated]
-    def post(self, request, product_id):
-        product = get_object_or_404(Product, id=product_id)
 
-        order = Order.objects.create(product=product, client=request.user)
+    def get(self, request, order_id):
+        order = get_object_or_404(Order, id=order_id)
 
-        serializer = OrderSerializer(order)
+        serilizer = OrderSerializer(order)
+        return Response(serilizer.data, status=status.HTTP_200_OK)
 
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
     def put(self, request, order_id):
         order = get_object_or_404(Order, id = order_id)
 
