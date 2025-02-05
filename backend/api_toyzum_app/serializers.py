@@ -33,7 +33,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
     
 class SellerSerializer(serializers.ModelSerializer):
     class Meta:
-        models = CustomUser
+        model = CustomUser
         fields = ["id", "phone_number", "email"]
 
 class ProductSerializer(serializers.ModelSerializer):

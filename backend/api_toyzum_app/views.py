@@ -76,7 +76,7 @@ def get_products(request):
     product = Product.objects.filter(category=category_id)
 
     if not product.exists():
-        return Response({'error': "No product of this category found"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': "No product of this category found"}, status=status.HTTP_404_NOT_FOUND)
 
     serializer = ProductSerializer(product, many=True)
 
@@ -133,7 +133,7 @@ class CategoryView(APIView):
         image = request.data.get("image")
         
         category = Category.objects.create(name=name, image=image)
-        return Response({"message": "Category created successfully", "category_id": category.id})
+        return Response({"message": "Category created successfully", "category_id": category.id}, status=status.HTTP_201_CREATED)
             
     
     def put(self, request, pk):
