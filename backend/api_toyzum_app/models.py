@@ -69,3 +69,19 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+    
+class Order(models.Model):
+    CHOICES = [
+        ("PENDING", "pending confirmation"),
+        ('CONFIRMED', "Confirmed"),
+        ("SHIPPING", "Shipping"),
+        ("SHIPPED", "Shipped"),
+        ("DELIVERED", "Delivered"),
+        ("CANCELLED", "Cancelled")
+    ]
+
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True)
+    client = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    status = models.CharField(max_length=15, choices=CHOICES, default="PENDING")
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_canceled = models.BooleanField(default=False)

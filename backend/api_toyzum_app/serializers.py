@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser, Product, Category
+from .models import CustomUser, Product, Category, Order
 from pymongo import MongoClient
 from gridfs import GridFS
 from backend.settings import MONGO_URI
@@ -31,8 +31,13 @@ class CustomUserSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
     
+class SellerSerializer(serializers.ModelSerializer):
+    class Meta:
+        models = CustomUser
+        fields = ["id", "phone_number", "email"]
 
 class ProductSerializer(serializers.ModelSerializer):
+    seller = SellerSerializer(read_only=True)
     class Meta:
         model = Product
         fields = '__all__'
@@ -55,4 +60,12 @@ class ProductSerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
+        fields = '__all__'
+
+
+class OrderSerializer(serializers.Serializer):
+    product = ProductSerializer(read_only=True)
+
+    class Meta:
+        model = Order
         fields = '__all__'

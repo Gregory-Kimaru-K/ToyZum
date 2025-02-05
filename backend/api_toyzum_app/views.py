@@ -1,7 +1,8 @@
+from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
-from .serializers import CustomUserSerializer, ProductSerializer, CategorySerializer
-from .models import CustomUser, Product, Category
+from .serializers import CustomUserSerializer, ProductSerializer, CategorySerializer, OrderSerializer
+from .models import CustomUser, Product, Category,Order
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -82,6 +83,8 @@ def get_products(request):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+
+
 class ProductView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -156,3 +159,34 @@ class CategoryView(APIView):
         
         except Category.DoesNotExist:
             return Response({"error": "Category does not exist"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class OrderView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request, product_id):
+        product = get_object_or_404(Product, id=product_id)
+
+        order = Order.objects.create(product=product, client=request.user)
+
+        serializer = OrderSerializer(order)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    def put(self, request, order_id):
+        order = get_object_or_404(Order, id = order_id)
+
+        valid_statuses = ["CONFIRMED", "SHIPPING", "SHIPPED", "DELIVERED", "CANCELLED"]
+
+        if request.user.role not in ['SUPERUSER', "SELLER"]:
+            valid_statuses = ["CANCELLED"]
+
+        new_status = request.data.get("status")
+
+        if new_status not in valid_statuses:
+            return Response({"error": "Invalid status update"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        order.status = new_status
+
+        order.save()
+
+        return Response({"message": f"Order status updated successfully to {new_status}"}, status=status.HTTP_200_OK)
