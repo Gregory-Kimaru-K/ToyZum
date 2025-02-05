@@ -10,7 +10,7 @@ function Home() {
   useEffect(() => {
     async function fetchCategories () {
       const data = await getCategory()
-      setCategories(data)
+      setCategories(data || [])
       console.log(categories)
     }
 
@@ -20,7 +20,7 @@ function Home() {
   return (
     <div>
         <div>
-          {categories.map((category, index) => (
+          {categories?.map?.((category, index) => (
             <div key={index} onClick={() => navigate(`/home/category/${category.id}`)}>
               <img src={category.image} alt='category_image' style={{width: '200px'}} />
               <p>{category.name}</p>

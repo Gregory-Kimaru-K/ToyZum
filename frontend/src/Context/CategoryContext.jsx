@@ -62,12 +62,13 @@ export const CategoryProvider = ({ children }) => {
             else {
                 const data = await response.json()
                 console.log(data)
-                return data
+                return ([]);
             }
         }
 
         catch (error) {
             console.log(error);
+            return ([]);
         }
     }
     const updateCategory = (id, FormData) => {}
