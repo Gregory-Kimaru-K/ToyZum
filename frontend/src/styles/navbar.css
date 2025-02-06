@@ -19,147 +19,114 @@
     font-family: sans-serif;
 }
 
-.dark {
-    background: var(--black);
-    color: var(--white);
-}
-
 .navbar {
-    position: fixed;
-    top: 0;
     width: 100%;
+    height: auto;
     display: flex;
-    justify-content:space-between;
+    justify-content: space-between;
     align-items: center;
-    background: color-mix(in srgb, var(--white) 20%, var(--blue2));
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
-    z-index: 10000;
-}
-
-.dark .navbar {
-    background: var(--black);
-    border-bottom: 2px solid var(--blue2);
-    border-bottom-left-radius: 20px;
-    border-bottom-right-radius: 20px;
-}
-
-.navbar img {
-    position: relative;
-    left: 4%;
-    width: 80px;
-    height: 80px;
-    cursor: pointer;
-}
-
-.navbar .mininav {
-    height: 100%;
-    padding: 12px 16px;
-    display: flex;
-    gap: 2rem;
-    background: var(--white);
-    border-radius: 40px;
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0px 0px 30px 1px rgba(50, 50, 50, 0.6);
-    -webkit-box-shadow: 0px 0px 30px 1px rgba(50, 50, 50, 0.6);
-    -moz-box-shadow: 0px 0px 30px 1px rgba(50, 50, 50, 0.6);
-    font-size: 1rem;
-}
-
-.navbar .mininav a {
-    position: relative;
-    text-decoration: none;
-    color: var(--black);
-    cursor: pointer;
-}
-
-.navbar .mininav a::before {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    height: 3px;
-    width: 0;
     background: var(--blue2);
-    border-radius: 5px;
-    transition: 0.5s;
 }
 
-.navbar .mininav a.active::before {
-    width: 100%;
-}
-
-.dark .navbar .mininav {
-    background: rgba(20, 20, 20);
-    box-shadow: 0px 0px 30px 1px rgba(125, 125, 125, 0.6);
-    -webkit-box-shadow: 0px 0px 30px 1px rgba(125, 125, 125, 0.6);
-    -moz-box-shadow: 0px 0px 30px 1px rgba(125, 125, 125, 0.6);
-}
-
-.dark .navbar .mininav a {
-    color: var(--white);
-}
-
-.navbar .profile {
-    position: relative;
-    stroke: none;
+.navbar a img{
     width: 56px;
-    height: 56px;
-    margin-right: 2%;
-    fill: var(--white);
-    background: var(--blue2);
-    border-radius: 50%;
-    padding: 8px;
-    cursor: pointer;
-    box-shadow: 0px 0px 30px 1px rgba(50, 50, 50, 0.6);
-    -webkit-box-shadow: 0px 0px 30px 1px rgba(50, 50, 50, 0.6);
-    -moz-box-shadow: 0px 0px 30px 1px rgba(50, 50, 50, 0.6);
 }
 
-.navbar .aprofile {
-    margin-right: 2%;
+.navbar .search {
+    width: 40%;
+    display: flex;
+    align-items: center;
 }
 
-.dark .navbar .profile {
-    background: var(--white);
-    fill: var(--black);
+.navbar .search div{
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.navbar .authbtn {
-    width: 12%;
+.navbar .search input {
+    width: 80%;
     height: 40px;
-    font-size: 1rem;
-    text-transform: uppercase;
-    margin-right: 2%;
-    background: linear-gradient(45deg, var(--orange) ,var(--tomato) ,var(--crimson));
-    border: none;
+    font-size: 1.2rem;
+    background: transparent;
+    border: 2px solid var(--black);
+    border-left: none;
     border-radius: 20px;
-    cursor: pointer;
-    background-size: 200%;
-    background-position: 0 0;
-    transition: background-position 1s ease, transform .5s ease;
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+    transition: 1s;
 }
 
-.navbar .authbtn:hover {
-    background-position: 100% 0;
+.navbar .search input:focus,
+.navbar .search input:valid {
+    outline: none;
+}
+
+.navbar .search input:focus,
+.navbar .search input:valid {
+    transform: scale(1.04);
+}
+
+#search_icon {
+    position: relative;
+    left: 0;
+    padding: 2px 5px;
+    width: 32px;
+    height: 32px;
+    border: 2px solid var(--black);
+    border-right: none;
+    border-radius: 20px;
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+    transition: 1s;
+}
+
+.navbar .search div:has(input:focus) #search_icon,
+.navbar .search div:has(input:valid) #search_icon {
+    transform: scale(1.04);
+    left: -6px;
+}
+
+.navbar .search button {
+    width: 30%;
+    height: 32px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: .5s;
+}
+
+.navbar .search button:hover {
     transform: scale(1.1);
 }
 
-@media screen and (max-width: 600px) {
-    .navbar img {
-        width: 56px;
-        height: 56px;
-    }
-    .navbar .profile {
-        width: 48px;
-        height: 48px;
-    }
-    .navbar .authbtn {
-        width: 32%;
-    }
+.navbar .account {
+    padding-right: 40px;
+    width: 30%;
+    display: flex;
+    justify-content: space-between;
+}
 
-    .navbar .authbtn:active {
-        background-position: 100% 0;
-        transform: scale(1.1);
-    }
+.navbar .account div {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+#chev {
+    padding-left: 8px;
+
+}
+
+#cart {
+    width: 28px;
+    height: 28px;
+}
+
+.navbar .account .ordersvg,
+#icon {
+    width: 24px;
+    height: 24px;
 }

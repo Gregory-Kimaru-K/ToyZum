@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Logo from '../../assets/toy7_edit2.png';
 import '../../styles/navbar.css';
-import PersonIcon from '../../assets/person-outline.svg?react';
+import OrdersImage from '../../assets/orders.svg?react';
+
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 
 function Navbar() {
@@ -23,46 +24,27 @@ function Navbar() {
     };
 
     return (
-        <div className="navbar">
-            {isMobile ? (
-                <>
-                    <Link to={'/home'}>
-                        <img src={Logo} alt="Toy_Zum Logo" />
-                    </Link>
-                    {localStorage.getItem('authTokens') ? (
-                        <Link to={'/profile'} className="aprofile">
-                            <PersonIcon className="profile" />
-                        </Link>
-                    ) : (
-                        <button className="authbtn" onClick={handleSignIn}>
-                            Sign in
-                        </button>
-                    )}
-                </>
-            ) : (
-                <>
-                    <NavLink to={'/home'}>
-                        <img src={Logo} alt="Toy_Zum Logo" />
-                    </NavLink>
-                    <div className="mininav">
-                        <NavLink to={'/home'}>Home</NavLink>
-                        <NavLink to={'/cart'}>Cart</NavLink>
-                        <NavLink to={'/purchases'}>My Purchases</NavLink>
-                        <NavLink to={'/settings'}>Settings</NavLink>
-                    </div>
-                    {localStorage.getItem('authTokens') ? (
-                        <Link to={'/profile'} className="aprofile">
-                            <PersonIcon className="profile" />
-                        </Link>
-                    ) : (
-                        <button className="authbtn" onClick={handleSignIn}>
-                            Sign in
-                        </button>
-                    )}
-                </>
-            )}
+        <div className='navbar'>
+            <Link to="/home">
+                <img src={Logo} alt="Logo" />
+            </Link>
+
+            <div className='search'>
+                <div>
+                    <ion-icon name="search-outline" id="search_icon"></ion-icon>
+                    <input type='text' id='input' required />
+                </div>
+                <button onClick={() => alert("hi")}>
+                    Search
+                </button>
+            </div>
+            <div className='account'>
+                <div><ion-icon name="person-outline" id="icon"></ion-icon> Account <ion-icon name="chevron-down-outline" id="chev"></ion-icon></div>
+                <div><OrdersImage className="ordersvg" /> Orders</div>
+                <div><ion-icon name="cart-outline" id="cart"></ion-icon> Cart</div>
+            </div> 
         </div>
-    );
+    )
 }
 
 export default Navbar;
