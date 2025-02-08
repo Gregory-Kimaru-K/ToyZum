@@ -6,6 +6,7 @@ export default CategoryContext;
 
 export const CategoryProvider = ({ children }) => {
     const [token, setToken] = useState(null)
+    const [categories, setCategories] = useState([])
 
     useEffect(() => {
         try {
@@ -56,6 +57,7 @@ export const CategoryProvider = ({ children }) => {
             if (response.ok){
                 const data = await response.json()
                 console.log(data)
+                setCategories(data)
                 return data
             }
 
@@ -78,7 +80,8 @@ export const CategoryProvider = ({ children }) => {
         createCategory: createCategory,
         updateCategory: updateCategory,
         deleteCategory: deleteCategory,
-        getCategory: getCategory
+        getCategory: getCategory,
+        categories: categories
     }
 
     return(

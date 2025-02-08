@@ -20,12 +20,17 @@
 }
 
 .navbar {
+    position: fixed;
+    top: 0;
     width: 100%;
-    height: auto;
+    height: 60px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: var(--blue2);
+    background: var(--white);
+    box-shadow: -3px 0px 20px 0px rgba(0,0,0,0.75);
+    -webkit-box-shadow: -3px 0px 20px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: -3px 0px 20px 0px rgba(0,0,0,0.75);
 }
 
 .navbar a img{
