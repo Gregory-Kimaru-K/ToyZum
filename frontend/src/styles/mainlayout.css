@@ -16,11 +16,13 @@
     padding: 0;
     margin: 0;
     box-sizing: border-box;
-    font-family: sans-serif;
+    font-family: "Ubuntu", serif;
+    font-weight: 400;
+    font-style: normal;
 }
 
 .layout {
-    padding-top: 64px;
+    padding-top: 80px;
     width: 100%;
 }
 
@@ -162,3 +164,173 @@ featured Categories Section
     background: rgb(250,235,215);
     cursor: pointer;
 }
+
+
+/*
+##########
+###############
+Products in category
+###############
+##########
+*/
+
+.layout .cat-products {
+    width: 97.5%;
+    display: flex;
+    justify-self: center;
+    flex-wrap: wrap;
+    gap: 2.5%;
+    cursor: pointer;
+}
+
+.layout .cat-products .product {
+    width: 30%;
+    padding: 16px;
+    background: #DDEFFF;
+    border-radius: 16px;
+}
+
+.layout .cat-products .product img {
+    width: 100%;
+    height: 200px;
+    border-radius: 16px;
+}
+
+.layout .cat-products .product .pname {
+    font-size: 1.6rem;
+}
+
+.layout .cat-products .product div {
+    position: relative;
+    z-index: 40;
+    cursor: pointer;
+}
+
+.layout .cat-products .product div .cart {
+    width: 48%;
+    height: 48px;
+    border-radius: 32px;
+    display: flex;
+    justify-self: end;
+    justify-content: center;
+    align-items: center;
+    background: #EC9E49;
+}
+
+#price-tag {
+    position: absolute;
+    top: 40%;
+    left: 44%;
+    font-size: 2rem;
+    color: #EC9E49;
+    transform: rotate(30deg);
+}
+
+/*
+##########
+###############
+Product
+###############
+##########
+*/
+
+.layout .prod-dets {
+    width: 96%;
+    height: auto;
+    padding: 16px;
+    display: flex;
+    justify-self: center;
+    gap: 64px;
+    background: #DDEFFF;
+    border-radius: 16px;
+}
+
+.layout .prod-dets .image-pagenation {
+    width: 50%;
+    height: 100%;
+}
+
+.layout .prod-dets .image-pagenation .image-sec {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: baseline;
+}
+
+.layout .prod-dets .img-div {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.layout .prod-dets .img-div img {
+    width: 80%;
+    height: 60vh;
+    border-radius: 16px;
+}
+
+.layout .prod-dets .pagination {
+    display: flex;
+    padding: 30px 0;
+    justify-content: center;
+}
+
+.layout .prod-dets .details {
+    width: 100%;
+}
+
+.layout .prod-dets .details .dets {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.layout .prod-dets .details .dets .dets-1 {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.layout .prod-dets .details .dets .dets-1 .name {
+    font-size: 3rem;
+    font-weight: 400;
+}
+
+.layout .prod-dets .details .dets .dets-1 .desc {
+    font-size: 1.2rem;
+}
+
+.layout .prod-dets .details .dets .dets-2 {
+    padding-top: 20px;
+
+}
+
+.layout .prod-dets .details .dets .dets-2 span {
+    padding: 20px 0;
+    border-top: 2px solid rgba(192,192,192,0.4);
+    display: flex;
+    justify-content: space-between;
+}
+
+.layout .prod-dets .details .dets .dets-2 span label {
+    font-weight: 500;
+}
+
+.layout .prod-dets .details .dets button {
+    align-self: center;
+    width: 32%;
+    height: 48px;
+    border: none;
+    border-radius: 32px;
+    background: #EC9E49;
+    cursor: pointer;
+}
+
+/*
+##########
+###############
+SELLER SECTION
+###############
+##########
+*/
+

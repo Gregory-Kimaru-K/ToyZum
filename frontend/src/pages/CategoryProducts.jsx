@@ -27,19 +27,28 @@ function CategoryProducts() {
 
         fetchProducts()
     }, [categoryid])
+
+    const handleAddToCart = (event) => {
+        event.stopPropagation()
+        alert("added to cart")
+    }
     return (
-        <div>
+        <div className='cat-products'>
             {products.length > 0 ?
                 products.map((product, index) => {
                     const fimage = product.images && product.images.length > 0 ? product.images[0] : null;
                     return(
-                        <div key={index} onClick={() => navigate(`/home/${product.id}`)}>
+                        <div className='product' key={index} onClick={() => navigate(`/home/${product.id}`)}>
                             {fimage ? (
-                                <img src={fimage} alt={product.name} style={{width: "200px"}} />
+                                <img src={fimage} alt={product.name} />
                             ):
-                            <p>no image found</p>}
-                            <h4>{product.name}</h4>
-                            <p>{product.description}</p>
+                            <p>no image found</p>
+                            }
+                            <p className='pname'>{product.name}</p>
+                            <div onClick={(event) => handleAddToCart(event)}>
+                                <ion-icon id="price-tag" name="pricetags-outline"></ion-icon>
+                                <p className='cart'>Ksh. {product.price}</p>
+                            </div>
                         </div>
                     )
                 })

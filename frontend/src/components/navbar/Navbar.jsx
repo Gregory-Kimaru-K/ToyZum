@@ -39,7 +39,11 @@ function Navbar() {
                 </button>
             </div>
             <div className='account'>
-                <div><ion-icon name="person-outline" id="icon"></ion-icon> Account <ion-icon name="chevron-down-outline" id="chev"></ion-icon></div>
+                <div className='account-set'>
+                    <span onClick={() => navigate("/profile")}>
+                        <ion-icon name="person-outline" id="icon"></ion-icon> Account <ion-icon name="chevron-down-outline" id="chev"></ion-icon>
+                    </span>
+                </div>
                 <div><OrdersImage className="ordersvg" /> Orders</div>
                 <div><ion-icon name="cart-outline" id="cart"></ion-icon> Cart</div>
             </div> 

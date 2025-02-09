@@ -39,6 +39,7 @@ export const AuthProvider = ({children}) => {
                 let data = await response.json()
                 setAuthTokens(data)
                 setUser(jwtDecode(data.access));
+                console.log(user)
                 localStorage.setItem("authTokens", JSON.stringify(data));
                 navigate('/home');
             }
@@ -68,8 +69,8 @@ export const AuthProvider = ({children}) => {
                 body: JSON.stringify({refresh: authTokens?.refresh})
             })
 
-            if (response === 200) {
-                let data = response.json()
+            if (response.status === 200) {
+                let data = await response.json()
                 setAuthTokens(data)
                 setUser(jwtDecode(data.access))
                 localStorage.setItem('authTokens', JSON.stringify(data))
@@ -88,12 +89,12 @@ export const AuthProvider = ({children}) => {
                 const decoded = jwtDecode(authTokens.access)
                 const now = Date.now() /1000
 
-                if (decoded.exp - now < 300) {
+                if (decoded.exp - now < 10*60) {
                     refreshTokens()
                 }
             }
         };
-        const interval = setInterval(checkTokenExpiration, 55*60*1000);
+        const interval = setInterval(checkTokenExpiration, 5000);
         return () => clearInterval(interval)
     }, [authTokens])
 
