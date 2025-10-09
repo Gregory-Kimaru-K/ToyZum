@@ -1,14 +1,20 @@
-import React, { useContext, useState } from 'react';
-import AuthContext from '../Context/Authcontext';
+import React, { useContext, useEffect, useState } from 'react';
+import AuthContext from "../Context/AuthContext";
 import CategoryContext from '../Context/CategoryContext';
 
 function CreateCategory() {
     const { user } = useContext(AuthContext);
-    const { createCategory } = useContext(CategoryContext)
+    const { createCategory,industries, getIndustries } = useContext(CategoryContext)
     const [FormData, setFormData] = useState({
         name: '',
         image: null,
     });
+
+    useEffect(() => {
+        if (industries.length === 0){
+            getIndustries()
+        }
+    }, [])
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
@@ -84,8 +90,17 @@ function CreateCategory() {
                         onChange={handleInputChange}
                     />
                     <span>Name</span>
-                    <button onClick={handleSubmit}>Submit</button>
                 </div>
+                <div className='radio'>
+                    {industries.map((industry) => (
+                        <div key={industry.id}>
+                            <input type='radio' name='industry' value={industry.id}
+                            onChange={handleInputChange} />
+                            <label>{industry.name}</label>
+                        </div>
+                    ))}
+                </div>
+                <button onClick={handleSubmit}>Submit</button>
             </div>
         );
     } else {

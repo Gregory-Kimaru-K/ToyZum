@@ -1,6 +1,7 @@
 import { jwtDecode } from "jwt-decode";
 import { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import backendurl from "../constants/constants";
 
 const AuthContext = createContext()
 
@@ -25,9 +26,36 @@ export const AuthProvider = ({children}) => {
 
     const navigate = useNavigate()
 
+    const createUser = async (createData) => {
+        try {
+            const response = await fetch(`${backendurl}token/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(createData)
+            })
+
+            if (response.status === 201) {
+                const data = await response.json()
+                setAuthTokens(data)
+                setUser(jwtDecode(data.access))
+                console.log(user)
+                localStorage.setItem("authTokens", JSON.stringify(data))
+            }
+            else {
+                const data = await response.json()
+                alert(`${JSON.stringify(data)}`)
+            }
+        }
+        catch (error) {
+            alert(error instanceof Error ? JSON.stringify(error.message) : "Network Error")
+        }
+    }
+
     const loginUser = async (loginData) => {
         try {
-            let response = await fetch("http://127.0.0.1:8000/api/token/", {
+            let response = await fetch(`${backendurl}token/`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -41,7 +69,6 @@ export const AuthProvider = ({children}) => {
                 setUser(jwtDecode(data.access));
                 console.log(user)
                 localStorage.setItem("authTokens", JSON.stringify(data));
-                navigate('/home');
             }
             else {
                 alert(`Something went wrong ${response.status}`)
@@ -61,7 +88,7 @@ export const AuthProvider = ({children}) => {
 
     const refreshTokens = async () => {
         try {
-            let response = await fetch("http://127.0.0.1:8000/api/token/refresh/", {
+            let response = await fetch(`${backendurl}token/refresh/`, {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json"
@@ -103,7 +130,8 @@ export const AuthProvider = ({children}) => {
         user: user,
         loginUser: loginUser,
         logoutUser: logoutUser,
-        authTokens: authTokens
+        authTokens: authTokens,
+        createUser
     }
 
     return(

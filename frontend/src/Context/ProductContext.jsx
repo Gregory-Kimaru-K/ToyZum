@@ -1,4 +1,5 @@
 import { createContext, useEffect, useState } from "react";
+import backendurl from "../constants/constants";
 
 const ProductContext = createContext()
 
@@ -28,7 +29,7 @@ export const ProductProvider = ({children}) => {
 
     const createProduct = async (formData) => {
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/product/create/', {
+            const response = await fetch(`${backendurl}product/create/`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${tokens}`,
@@ -53,12 +54,10 @@ export const ProductProvider = ({children}) => {
     }
 
 
-    const getProducts = async () => {}
     const updateProduct = async (id, FormData) => {}
     const deleteProduct = async (id, FormData) => {}
     const contextData = {
         createProduct: createProduct,
-        getProducts: getProducts,
         updateProduct: updateProduct,
         deleteProduct: deleteProduct
     }

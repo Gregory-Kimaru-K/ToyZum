@@ -1,7 +1,6 @@
 import React from 'react'
 import { Outlet } from 'react-router-dom'
-import { AuthProvider } from '../Context/Authcontext'
-
+import { AuthProvider } from '../Context/AuthContext'
 function AuthLayout() {
   return (
     <div className='auth-layout'>

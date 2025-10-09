@@ -1,4 +1,5 @@
 import { createContext, useCallback, useEffect, useState } from "react"
+import backendurl from "../constants/constants"
 
 const OrderContext = createContext()
 
@@ -6,6 +7,10 @@ export default OrderContext
 
 export const OrderProvider = ({children}) => {
     const [token, setToken] = useState(null)
+    const [isReady, setIsReady] = useState(false)
+    const [orders, setOrders] = useState([])
+    const [myOrders, setMyOrders] = useState([])
+    const [order, setOrder] = useState()
 
     useEffect(() => {
         try{
@@ -21,22 +26,25 @@ export const OrderProvider = ({children}) => {
         }
         catch (error) {
             console.log("Error", error)
+        } finally {
+            setIsReady(true)
         }
 
     }, [])
 
-    const createOrders = useCallback(async (product_id) => {
+    const createOrders = useCallback(async (data, product) => {
         if (!token){
             console.error("NO TOKEN")
             return;
         }
         try{
-            const response = await fetch(`http://127.0.0.1:8000/api/orders/${product_id}`, {
+            const response = await fetch(`${backendurl}orders/create/${product}/`, {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type":"application/json"
-                }
+                },
+                body: JSON.stringify(data)
             })
 
             if (response.status === 201){
@@ -52,13 +60,14 @@ export const OrderProvider = ({children}) => {
             console.log("ERROR", error)
         }
     }, [token])
+
     const getOrders =useCallback(async () => {
         if (!token){
             console.error("NO TOKEN")
             return;
         }
         try{
-            const response = await fetch("http://127.0.0.1:8000/api/orders/", {
+            const response = await fetch(`${backendurl}orders/`, {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -66,16 +75,56 @@ export const OrderProvider = ({children}) => {
                 }
             })
 
-            if (response === 200){
+            if (response.status === 200){
                 const data = await response.json()
-                console.log(`SUCCESS DATA: ${data}`)
+                if(data.length === 0){
+                    setOrders("NONE")
+                }
+                setOrders(data)
+                console.log(`SUCCESS DATA: ${JSON.stringify(data)}`)
             }
             else{
                 const data = await response.json()
-                console.log(`ERROR DATA: ${data}`)
+                alert(json.stringify(data))
+                console.log(`ERROR DATA: ${json.stringify(data)}`)
             }
         }
         catch (error){
+            alert(json.stringify(data))
+            console.log(`ERROR: ${error}`)
+        }
+    }, [token])
+
+    const getMyOrders =useCallback(async () => {
+        if (!token){
+            console.error("NO TOKEN")
+            return;
+        }
+        try{
+            const response = await fetch(`${backendurl}my_orders/`, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type":"application/json"
+                }
+            })
+
+            if (response.status === 200){
+                const data = await response.json()
+                if(data.length === 0){
+                    setMyOrders("NONE")
+                }
+                setMyOrders(data)
+                console.log(`SUCCESS DATA: ${JSON.stringify(data)}`)
+            }
+            else{
+                const data = await response.json()
+                alert(json.stringify(data))
+                console.log(`ERROR DATA: ${json.stringify(data)}`)
+            }
+        }
+        catch (error){
+            alert(json.stringify(data))
             console.log(`ERROR: ${error}`)
         }
     }, [token])
@@ -86,15 +135,16 @@ export const OrderProvider = ({children}) => {
             return;
         }
         try{
-            const response = await fetch(`http://127.0.0.1:8000/api/orders/${id}`, {
+            const response = await fetch(`${backendurl}orders/${id}`, {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type":"application/json"
                 }
             })
-            if (response === 200){
+            if (response.status === 200){
                 const data = await response.json()
+                setOrder(data)
                 console.log(`SUCCESS DATA: ${data}`)
             }
             else{
@@ -115,14 +165,14 @@ export const OrderProvider = ({children}) => {
             return;
         }
         try{
-            const response = await fetch(`http://127.0.0.1:8000/api/orders/${id}`, {
+            const response = await fetch(`${backendurl}orders/${id}/`, {
                 method: "PUT",
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type":"application/json"
                 }
             })
-            if (response === 200){
+            if (response.status === 200){
                 const data = await response.json()
                 console.log(`SUCCESS DATA: ${data}`)
             }
@@ -137,10 +187,15 @@ export const OrderProvider = ({children}) => {
     }, [token])
 
     const ContextData = {
-        createOrders: createOrders,
-        getOrders: getOrders,
-        getOrder: getOrder,
-        updateStatus: updateStatus
+        createOrders,
+        getOrders,
+        getMyOrders,
+        getOrder,
+        updateStatus,
+        orders,
+        isReady,
+        myOrders,
+        order
     }
 
     return(

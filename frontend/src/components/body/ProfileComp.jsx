@@ -1,6 +1,5 @@
 import React, { useContext } from 'react'
-import AuthContext from '../../Context/Authcontext'
-
+import AuthContext from "../../Context/AuthContext"
 function ProfileComp() {
     const {user, logoutUser} = useContext(AuthContext)
 

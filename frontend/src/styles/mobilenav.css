@@ -20,49 +20,50 @@
 }
 
 .botnav {
-    width: 100%;
     position: fixed;
     bottom: 0;
-    z-index: 30;
-    background: color-mix(in srgb, var(--blue2) 80%, var(--white));
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-    border-top: 2px solid var(--blue2);
-}
-
-.dark .botnav {
-    background: var(--black);
-    border-top: 2px solid var(--blue2);
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
-}
-
-.botnav .icons {
+    background-color: var(--white);
+    width: 100%;
+    height: 56px;
+    z-index: 200;
     display: flex;
     justify-content: space-around;
+    align-items: center;
+    box-shadow: -1px -9px 25px -1px rgba(0,0,0,0.75);
+    -webkit-box-shadow: -1px -9px 25px -1px rgba(0,0,0,0.75);
+    -moz-box-shadow: -1px -9px 25px -1px rgba(0,0,0,0.75);
 }
 
 .botnav .icon {
-    width: 40px;
-    height: 40px;
-    fill: var(--white);
-    stroke: var(--white);
-    cursor: pointer;
+    color: #000000;
+    text-decoration: none;
+    text-align: center;
+    display: flex;
+    padding: 8px 16px;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.5s;
 }
 
-.botnav .cardi {
-    stroke: var(--blue2);
+.botnav .icon .mob_icon {
+    width: 32px;
+    height: 32px;
 }
 
-.botnav .set {
-    width: 36px;
+.botnav .icon .mob_cart {
+    transform: none;
+    font-size: 2rem;
 }
 
-.dark .botnav .icon {
-    fill: var(--white);
-    stroke: var(--white);
+.botnav .icon.active {
+    background-color: var(--white);
+    border-radius: 50%;
+    transform: translateY(-28%);
+    box-shadow: 0px 4px 9px 4px rgba(0,0,0,0.75);
+    -webkit-box-shadow: 0px 4px 9px 4px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 4px 9px 4px rgba(0,0,0,0.75);
 }
 
-.dark .botnav .card {
-    stroke: var(--black);
+.botnav .icon p {
+    font-size: 0.8rem;
 }

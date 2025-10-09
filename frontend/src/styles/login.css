@@ -21,12 +21,21 @@ FORM
 ###############
 ##########
 */
-.container {
-    margin-top: 24px;
+.login {
+    position: relative;
+    top: 0;
+    z-index: 100;
     width: 100%;
-    height: auto;
+    height: 100%;
+}
+
+.container {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(192,192,192,0.8);
     display: flex;
     justify-content: center;
+    align-items: center;
 }
 
 .singup {
@@ -41,9 +50,10 @@ FORM
 
 .card {
     display: flex;
+    background-color: #ffffff;
     justify-content: center;
     align-items: center;
-    min-height: 350px;
+    height: 50%;
     width: 32%;
     flex-direction: column;
     gap: 35px;
@@ -55,14 +65,15 @@ FORM
 }
 
 .inputBox,
-.inputBox1 {
+.inputBox1,
+.add_desc {
     position: relative;
     width: 80%;
 }
 
 .inputBox input,
 .inputBox1 input,
-.input_add_prod textarea {
+.add_desc textarea {
     width: 100%;
     padding: 10px;
     outline: none;
@@ -78,7 +89,7 @@ FORM
 
 .inputBox span,
 .inputBox1 span,
-.input_add_prod .desc {
+.add_desc .desc {
     margin-top: 5px;
     position: absolute;
     left: 0;
@@ -96,8 +107,8 @@ FORM
 
 .inputBox input:valid~span,
 .inputBox input:focus~span,
-.input_add_prod textarea:focus~span,
-.input_add_prod textarea:valid~span {
+.add_desc textarea:focus~span,
+.add_desc textarea:valid~span {
     transform: translateX(100%) translateY(-15px);
     font-size: 0.8em;
     padding: 5px 10px;
@@ -105,6 +116,11 @@ FORM
     letter-spacing: 0.2em;
     color: var(--white);
     border: 2px;
+}
+
+.add_desc textarea:focus~span,
+.add_desc textarea:valid~span {
+    transform: translateX(200%) translateY(-20px);
 }
 
 .inputBox1 input:valid~span,
@@ -121,7 +137,9 @@ FORM
 .inputBox input:valid,
 .inputBox input:focus,
 .inputBox1 input:valid,
-.inputBox1 input:focus {
+.inputBox1 input:focus,
+.add_desc textarea:focus,
+.add_desc textarea:valid{
     border: 2px solid var(--black);
     border-radius: 8px;
 }
@@ -215,4 +233,64 @@ Toggle Login Form
     .toggleLogin button {
         width: 56%;
     }
+}
+
+/**
+##########
+###############
+####################
+FORM CREATE
+####################
+###############
+##########
+*/
+
+.absol {
+    position: relative;
+    top: 0;
+    z-index: 100;
+    width: 100%;
+    height: 100%;
+}
+
+.absol .container {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(192,192,192,0.8);
+    display: flex;
+}
+
+.absol .container .card {
+    position: relative;
+    background-color: #ffffff;
+    height: 80%;
+    align-self: center;
+}
+
+.absol .container .card .name {
+    display: flex;
+    justify-content: space-between;
+}
+
+.absol .container .card .name .name-in {
+    width: 40%;
+}
+
+.name-in input:valid~span,
+.name-in input:focus~span {
+    transform: translateX(12%) translateY(-15px);
+    font-size: 0.8em;
+    padding: 5px 10px;
+    background: var(--black);
+    letter-spacing: 0.2em;
+    color: var(--white);
+    border: 2px;
+}
+
+/* Hide the dial code, keep the country name visible */
+.react-tel-input .country-list .country .dial-code,
+.react-tel-input .country-list .country .country-dial-code,
+.react-tel-input .country-list .country .country-code {
+  display: none !important;
 }

@@ -1,24 +1,27 @@
-import React, { useContext, useEffect, useState } from 'react'
-import AuthContext from '../../Context/Authcontext'
+import React, { useContext, useEffect, useRef, useState } from 'react'
+import AuthContext from '../../Context/AuthContext'
 import CategoryContext from '../../Context/CategoryContext'
 import ProductContext from '../../Context/ProductContext'
+import { SwiperSlide, Swiper } from 'swiper/react'
+import { Navigation, Pagination } from 'swiper/modules';
+import 'swiper/swiper-bundle.css';
 
 function AddProdComp() {
     const {user} = useContext(AuthContext)
-    const {getCategory} = useContext(CategoryContext)
-    const [categories, setCategories] = useState([])
-    const [step, setStep] = useState(1)
+    const {getCategories, categories, industries, getIndustries} = useContext(CategoryContext)
     const [formData, setFormData] = useState({})
     const {createProduct} = useContext(ProductContext)
+    const [selectedIndustry, setSelectedIndustry] = useState(null)
+    const imageInput = useRef(null)
 
     useEffect(() => {
-        const fetchCategories = async () => {
-            const data = await getCategory()
-            setCategories(data)
-            console.log(categories)
+        if (categories.length === 0){
+            getCategories()
         }
-        fetchCategories()
-    }, [getCategory])
+        if (industries.length === 0){
+            getIndustries()
+        }
+    }, [])
 
     useEffect(() => {
         console.log(formData)
@@ -46,78 +49,125 @@ function AddProdComp() {
         setFormData((prev) => ({...prev, [name]: value}))
     }
 
+    const handleFileInput = () => {
+        imageInput.current.click()
+    }
+
     const handleSubmit = () => {
         createProduct(formData)
     }
 
     if (localStorage.getItem("authTokens") && ['SELLER', 'SUPERUSER'].includes(user?.role)){
         return (
-            <div className='add-product'>
-                {step === 1 && (
-                    <div className='step-container'>
-                        <div className='preview image'>
-                            {formData.images?.map((image, key) => <img src={image} alt='preview' key={key} style={{width: '200px'}} />)}
-                        </div>
-
-                        <div className="input-div">
-                            <input type="file" className='input' name="images" accept="image/*" multiple onChange={handleFileChange} />
-                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24" stroke-width="2" fill="none" stroke="currentColor" class="icon"><polyline points="16 16 12 12 8 16"></polyline><line y2="21" x2="12" y1="12" x1="12"></line><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path><polyline points="16 16 12 12 8 16"></polyline></svg>
-                        </div>
+            <div id='add_prod'>
+                {formData.images ?
+                    <Swiper
+                        modules={[Navigation, Pagination]}
+                        pagination={{clickable: true}}
+                        navigation
+                        loop={true}
+                        className='add_imgs'
+                        slidesPerView={1}
+                        spaceBetween={3}
+                    >
+                        {formData.images &&
+                            formData.images.map((img, idx) => (
+                                <SwiperSlide
+                                    className='img_cont'
+                                    onClick={handleFileInput}
+                                    >
+                                    <img src={img} key={idx} />
+                                </SwiperSlide>
+                            ))}
+                    </Swiper>
+                    :
+                    <div className='img_select' onClick={handleFileInput}>
+                        <ion-icon name="image-outline" id="img_out"></ion-icon>
+                        <p>Select Image</p>
+                    </div>
+                }
+                <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    ref={imageInput}
+                    style={{display: "none"}}
+                    onChange={handleFileChange}  />
+                <div className='inputs'>
+                    <h1>PRODUCT DETAILS</h1>
+                    <div class="inputBox1">
+                        <input type="text" required name='text' />
+                        <span class="user">Product Name</span>
+                    </div>
+                    <div className='add_desc'>
+                        <textarea
+                            rows={5}
+                            required
+                        ></textarea>
+                        <span className='desc'>Description</span>
+                    </div>
+                    <div class="inputBox1">
+                        <input type="number" required name='number' />
+                        <span class="user">price</span>
+                    </div>
+                    <div class="inputBox1">
+                        <input type="number" required name='number' />
+                        <span class="user">discount</span>
+                    </div>
+                    <div className='ind_category'>
+                        <h2>GENDER</h2>
                         <div>
-                            <button onClick={() => setStep(2)}>Next</button>
+                            <p 
+                                className={formData.gender === "BOY" && "active"}
+                                onClick={() => setFormData((prev) => ({...prev, gender: "BOY"}))}>
+                                BOY
+                            </p>
+                            <p 
+                                className={formData.gender === "GIRL" && "active"}
+                                onClick={() => setFormData((prev) => ({...prev, gender: "GIRL"}))}
+                            >
+                                GIRL
+                            </p>
+                            <p 
+                                className={formData.gender === "UNISEX" && "active"}
+                                onClick={() => setFormData((prev) => ({...prev, gender: "UNISEX"}))}
+                            >
+                                UNISEX
+                            </p>
                         </div>
                     </div>
-                )}
-                {step === 2 && (
-                    <div className="step-container">
-                        <div className="inputBox input_add_prod">
-                            <input type="text" required name='name' onChange={handleInputChange} />
-                            <span>Name</span>
-                        </div>
-
-                        <div className="inputBox input_add_prod">
-                            <textarea required name='description' rows={10} cols={100} onChange={handleInputChange}></textarea>
-                            <span className='desc'>Description</span>
-                        </div>
-                        <button onClick={() => setStep(1)}>Previous</button>
-                        <button onClick={() => setStep(3)}>Next</button>
-                    </div>
-                )}
-                {step === 3 && (
-                    <div className="step-container">
-                        <div className='radio'>
-                            <input type='radio' name='gender' value={'BOY'} onChange={handleInputChange} />
-                            <label>Boy</label><br/><br/>
-                            <input type="radio" name='gender' value={'GIRL'} onChange={handleInputChange} />
-                            <label>Girl</label><br/><br/>
-                            <input type='radio' name='gender' value={'UNISEX'} onChange={handleInputChange} />
-                            <label>Unisex</label><br/><br/>
-                        </div>
-
-                        <div className='radio'>
-                            {categories.map((category) => (
-                                <div key={category.id}>
-                                    <input type='radio' name='category' value={category.id} onChange={handleInputChange} />
-                                    <label>{category.name}</label>
-                                </div>
+                    <div className='ind_category'>
+                        <h2>PRODUCT INDUSTRY</h2>
+                        <div>
+                            {industries.map((ind, idx) => (
+                                <p 
+                                    key={idx}
+                                    className={selectedIndustry === ind.id && "active"}
+                                    onClick={() => setSelectedIndustry(ind.id)}>
+                                    {ind.name}
+                                </p>
                             ))}
                         </div>
-
-                        <div className="inputBox input_add_prod">
-                            <input type="number" required name='quantity' onChange={handleInputChange} />
-                            <span>Quantity</span>
-                        </div>
-
-                        <div className="inputBox input_add_prod">
-                            <input type="number" required name='price' onChange={handleInputChange} step='0.01' />
-                            <span>Price</span>
-                        </div>
-                        <button onClick={() => setStep(2)}>Previous</button>
-                        <button onClick={handleSubmit}>Create Item</button>
                     </div>
-                )}
-                <div className='add_prod'>                    
-                   
+                    {selectedIndustry && (
+                        <div className='ind_category'>
+                            <h2>PRODUCT CATEGORY</h2>
+                            <div>
+                                {categories.filter(cat => cat.industry.id === selectedIndustry)
+                                .map((cat, idx) => (
+                                    <p
+                                        key={idx}
+                                        className={formData.category === cat.id && "active"}
+                                        onClick={() => setFormData((prev) => ({...prev, category: cat.id}))}>
+                                        {cat.name}
+                                    </p>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                    <button className='create'>
+                        CREATE
+                    </button>
                 </div>
             </div>
         )

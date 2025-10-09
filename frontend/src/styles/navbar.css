@@ -28,7 +28,7 @@
     justify-content: space-between;
     align-items: center;
     background: var(--white);
-    z-index: 99999;
+    z-index: 40;
     box-shadow: -3px 0px 20px 0px rgba(0,0,0,0.75);
     -webkit-box-shadow: -3px 0px 20px 0px rgba(0,0,0,0.75);
     -moz-box-shadow: -3px 0px 20px 0px rgba(0,0,0,0.75);
@@ -112,7 +112,7 @@
 
 .navbar .account {
     padding-right: 40px;
-    width: 30%;
+    width: 40%;
     display: flex;
     justify-content: space-between;
 }
@@ -123,11 +123,53 @@
     cursor: pointer;
 }
 
+.navbar .account .account-set .dropdown {
+    width: 108px;
+    position: absolute;
+    top: 110%;
+    background-color: #ffffff;
+    display: flex;
+    align-self: center;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: -3px 0px 20px 0px rgba(0,0,0,0.75);
+    -webkit-box-shadow: -3px 0px 20px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: -3px 0px 20px 0px rgba(0,0,0,0.75);
+    z-index: 41;
+}
+
+.navbar .account .account-set .dropdown::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    align-self: center;
+    width: 20px;
+    height: 20px;
+    transform: rotate(45deg);
+    background-color: #ffffff;
+    z-index: -1;
+}
+
+.navbar .account .account-set .dropdown a{
+    width: 100%;
+    padding: 8px;
+    border-bottom: 1px solid rgba(192,192,192,0.4);
+    text-align: center;
+    cursor: pointer;
+    color: #000000;
+    text-decoration: none;
+}
+
+.navbar .account .account-set .dropdown a:hover{
+    background-color: rgba(192,192,192,0.4);
+}
+
 #chev {
     padding-left: 8px;
 }
 
-#cart {
+#cart,
+.navbar .account .productsvg {
     width: 28px;
     height: 28px;
 }
@@ -136,4 +178,18 @@
 #icon {
     width: 24px;
     height: 24px;
+}
+
+@media screen and (max-width: 1100px) {
+    .navbar .search {
+        justify-content: space-between;
+        width: 56%;
+    }
+    .navbar .search button {
+        width: 40%;
+        height: 40px;
+    }
+    .navbar .account {
+        width: 20%;
+    }
 }
