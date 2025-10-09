@@ -42,42 +42,45 @@ export const AuthProvider = ({children}) => {
                 setUser(jwtDecode(data.access))
                 console.log(user)
                 localStorage.setItem("authTokens", JSON.stringify(data))
+                return({success: true})
             }
             else {
                 const data = await response.json()
                 alert(`${JSON.stringify(data)}`)
+                return({success: false, errors: "Something went wrong"})
             }
         }
         catch (error) {
-            alert(error instanceof Error ? JSON.stringify(error.message) : "Network Error")
+            return({success: false, errors: error instanceof Error ? JSON.stringify(error.message) : "Network Error"})
         }
     }
 
-    const loginUser = async (loginData) => {
-        try {
-            let response = await fetch(`${backendurl}token/`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(loginData)
-            })
+const loginUser = async (loginData) => {
+    try {
+        const response = await fetch(`${backendurl}token/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(loginData),
+        });
 
-            if (response.status === 200) {
-                let data = await response.json()
-                setAuthTokens(data)
-                setUser(jwtDecode(data.access));
-                console.log(user)
-                localStorage.setItem("authTokens", JSON.stringify(data));
-            }
-            else {
-                alert(`Something went wrong ${response.status}`)
-            }
+        const data = await response.json();
+
+        if (response.ok) {
+            // Successful login
+            setAuthTokens(data);
+            setUser(jwtDecode(data.access));
+            localStorage.setItem("authTokens", JSON.stringify(data));
+
+            return { success: true };
+        } else {
+            return { success: false, errors: "Invalid Credentials" };
         }
-        catch (error) {
-            alert(`Error: ${error.message}`)
-        }
+    } catch (error) {
+        return { success: false, errors: error instanceof Error ? error.message : "Network Error" };
     }
+};
 
     const logoutUser = () => {
         setAuthTokens(null)

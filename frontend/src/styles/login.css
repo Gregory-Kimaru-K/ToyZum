@@ -49,11 +49,12 @@ FORM
 }
 
 .card {
+    position: relative;
     display: flex;
     background-color: #ffffff;
     justify-content: center;
     align-items: center;
-    height: 50%;
+    height: 64%;
     width: 32%;
     flex-direction: column;
     gap: 35px;
@@ -155,9 +156,10 @@ FORM
     color: var(--cards);
 }
 
-.enter {
-    height: 45px;
-    width: 100px;
+.enter,
+#enter {
+    height: 56px;
+    width: 160px;
     border-radius: 5px;
     border: 2px solid var(--black);
     color: var(--black);
@@ -170,7 +172,8 @@ FORM
     margin: 32px 0;
 }
 
-.enter:hover {
+.enter:hover,
+#enter:hover {
     background-color: var(--black);
     color: var(--white);
 }
@@ -264,7 +267,7 @@ FORM CREATE
 .absol .container .card {
     position: relative;
     background-color: #ffffff;
-    height: 80%;
+    height: 88%;
     align-self: center;
 }
 
@@ -288,9 +291,20 @@ FORM CREATE
     border: 2px;
 }
 
+#enter {
+    width: 200px;
+    height: 64px;
+}
+
 /* Hide the dial code, keep the country name visible */
 .react-tel-input .country-list .country .dial-code,
 .react-tel-input .country-list .country .country-dial-code,
 .react-tel-input .country-list .country .country-code {
   display: none !important;
+}
+
+@media screen and (max-width: 1100px) {
+    .absol .container .card {
+        width: 64%;
+    }
 }

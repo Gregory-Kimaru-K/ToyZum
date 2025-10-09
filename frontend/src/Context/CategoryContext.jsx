@@ -81,6 +81,7 @@ export const CategoryProvider = ({ children }) => {
                                 id
                                 name
                                 image
+                                slug
                             }
                         }
                         `

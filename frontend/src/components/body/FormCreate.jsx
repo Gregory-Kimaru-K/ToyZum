@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import 'react-phone-input-2/lib/style.css'
 import "../../styles/login.css"
-import { Link } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import AuthContext from '../../Context/AuthContext'
 import PhoneInput from 'react-phone-input-2'
 
@@ -9,11 +9,15 @@ function FormCreate() {
     const [formData, setFormData] = useState({})
     const { createUser } = useContext(AuthContext)
     const [error, setError] = useState("")
+    const location = useLocation()
+    const queryParams = new URLSearchParams(location.search)
+    const nextParam = queryParams.get("next")
+    const navigate = useNavigate()
 
     useEffect(() => {
         console.log(JSON.stringify(formData))
     }, [formData])
-    const handleSubmit = () => {
+    const handleSubmit = async() => {
         setError({})
 
         // Name check
@@ -55,7 +59,13 @@ function FormCreate() {
 
         // If all validations pass
         setError("")
-        createUser(formData)
+        const res = await createUser(formData)
+        if (res.success) {
+            navigate(nextParam ? decodeURIComponent(nextParam) : "/home")
+        }
+        else {
+            setError(res.errors)
+        }
     }
 
 
@@ -110,8 +120,6 @@ function FormCreate() {
                                 background: "none"
                             }}
                          />
-                        {/* <input type="tel" required name='phone_number' onChange={handleOnChange} value={formData.phone_number || ""} />
-                        <span className="user">Phone Number</span> */}
                     </div>
 
                     <div className="inputBox">
@@ -122,10 +130,15 @@ function FormCreate() {
                         <input type="password" required name='cpassword' onChange={handleOnChange} />
                         <span className="user">Confirm Password</span>
                     </div>
-                    <button className="enter" onClick={handleSubmit}>Enter</button>
+                    <button id="enter" onClick={handleSubmit}>Enter</button>
                     <p>
                         Have an account?{" "}
-                        <Link style={{ fontWeight: "bold", textDecoration: "none", color: "#000000" }} to={"/auth/login"}>
+                        <Link
+                            style={{ fontWeight: "bold", textDecoration: "none", color: "#000000" }}
+                            to={
+                                nextParam ?
+                                    `/auth/login?next=${encodeURIComponent(nextParam)}`
+                                : "/auth/login"}>
                             Login
                         </Link>
                     </p>

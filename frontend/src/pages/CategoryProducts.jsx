@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import CategoryContext from '../Context/CategoryContext'
 import FilterComp from '../components/body/FilterComp'
 import backendurl from '../constants/constants'
@@ -112,9 +112,22 @@ function CategoryProducts() {
 
     return (
         <div style={{ width: "100%"}}>
+            {isMobile && 
+                <button
+                    className='filter_btn'
+                    onClick={() => setFilterDisplay(true)}>
+                        <ion-icon name="funnel-outline"></ion-icon> Funnel
+                </button>
+            }
             {/* PRODUCTS */}
             <div className='cat-products'>
-                {isMobile === false && <FilterComp filters={filters} setFilters={setFilters} categories={categories} industries={industries} setFilterDisplay = {setFilterDisplay} />}
+                {!isMobile ?(
+                    <FilterComp filters={filters} setFilters={setFilters} categories={categories} industries={industries} setFilterDisplay = {setFilterDisplay} />
+                ):(
+                    filterDisplay === true && (
+                        <FilterComp filters={filters} setFilters={setFilters} categories={categories} industries={industries} setFilterDisplay = {setFilterDisplay} />
+                    )
+                )}
                 <div className='products_cont'>
                     {products.length > 0 ?
                         products.map((product, index) => {

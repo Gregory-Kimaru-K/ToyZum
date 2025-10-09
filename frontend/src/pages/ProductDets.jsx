@@ -1,19 +1,23 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { useLocation, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 import 'swiper/swiper-bundle.css';
-import OrderContext from '../Context/OrderContext';
 import LocationOrder from '../components/body/LocationOrder';
 import backendurl from '../constants/constants';
+import AuthContext from '../Context/AuthContext';
 
 function ProductDets() {
   const {productid} = useParams()
-  const {createOrders} = useContext(OrderContext)
-  const location = useLocation()
-  const [product, setProduct] = useState(location.state || undefined)
-  const [inCart, setInCart] = useState(false) // ✅ track if product already in cart
+  const {user} = useContext(AuthContext)
+  const navigate = useNavigate()
+  const [product, setProduct] = useState({})
+  const [inCart, setInCart] = useState(false)
   const [quantity, setQuantity] = useState(1)
+  const [myLocation, setMyLocation] = useState({
+    latitude: -1.2921,
+    longitude: 36.8219
+  })
   const [orderLocation, setOrderLocation] = useState(false)
 
   useEffect(() => {
@@ -60,6 +64,20 @@ function ProductDets() {
     getProduct()
   }, [productid])
 
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const q = searchParams.get("quantity");
+
+    if (q) {
+      const qty = parseInt(q);
+      if (!isNaN(qty) && qty > 0) {
+        setQuantity(qty);
+        setOrderLocation(true);
+      }
+    }
+  }, []);
+
+
   // ✅ Handle Add to Cart
   const handleAddToCart = () => {
     if (!product || inCart) return
@@ -94,12 +112,15 @@ function ProductDets() {
     setQuantity((prev) => Math.max(1, prev - 1))
   }
 
-  const handleCreateOrder = async() => {
-    const data = {
-      quantity: quantity
+  const handleLocation = () => {
+    if (user) {
+      setOrderLocation(true)
+      return
     }
-    await createOrders(data, product.id)
+    const nextUrl = encodeURIComponent(`/home/${productid}?quantity=${quantity}`)
+    navigate(`/auth/login?next=${nextUrl}`)
   }
+
   return (
     <>
       <div className='prod-dets'>
@@ -177,7 +198,7 @@ function ProductDets() {
                 >
                   {inCart ? "Already in Cart" : "Add To Cart"}
                 </button>
-                <button onClick={handleCreateOrder}>
+                <button onClick={handleLocation}>
                   Order Product
                 </button>
               </div>
@@ -188,7 +209,7 @@ function ProductDets() {
       </div>
       {orderLocation &&
         <div className='order_location'>
-          <LocationOrder setOrderLocation={setOrderLocation} />
+          <LocationOrder setOrderLocation={setOrderLocation} quantity={quantity} setMyLocation={setMyLocation} myLocation={myLocation} />
         </div>
       }
     </>

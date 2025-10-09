@@ -1,10 +1,8 @@
-import React, { useState } from "react"
+import React, { useContext, useState } from "react"
+import OrderContext from "../../Context/OrderContext"
 
-function LocationOrder({setOrderLocation}) {
-  const [location, setLocation] = useState({
-    latitude: -1.2921,
-    longitude: 36.8219
-  })
+function LocationOrder({setOrderLocation, setMyLocation, myLocation, quantity}) {
+  const {createOrders} = useContext(OrderContext)
   const [step, setStep] = useState(1)
   const [deliveryOptions, setDeliveryOptions] = useState()
 
@@ -12,7 +10,7 @@ function LocationOrder({setOrderLocation}) {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setLocation({
+          setMyLocation({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
           })
@@ -26,6 +24,17 @@ function LocationOrder({setOrderLocation}) {
       alert("Geolocation is not supported by your browser.")
     }
   }
+
+    const handleCreateOrder = async() => {
+      if (user) {
+        const data = {
+          quantity: quantity,
+          longitude: myLocation.longitude,
+          latitude: myLocation.latitude
+        }
+        await createOrders(data, product.id)
+      }
+    }
 
   return (
     <div className="order_container">
@@ -76,7 +85,7 @@ function LocationOrder({setOrderLocation}) {
           <ion-icon id="my_location" onClick={getUserLocation} name="locate-outline"></ion-icon>
           <iframe
             title="Google Maps"
-            src={`https://www.google.com/maps?q=${location.latitude},${location.longitude}&hl=es;z=14&output=embed`}
+            src={`https://www.google.com/maps?q=${myLocation.latitude},${myLocation.longitude}&hl=es;z=14&output=embed`}
             width="100%"
             height="88%"
             style={{

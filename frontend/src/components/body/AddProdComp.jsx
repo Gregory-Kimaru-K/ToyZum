@@ -96,22 +96,23 @@ function AddProdComp() {
                 <div className='inputs'>
                     <h1>PRODUCT DETAILS</h1>
                     <div class="inputBox1">
-                        <input type="text" required name='text' />
+                        <input type="text" required name='text' onChange={handleInputChange} />
                         <span class="user">Product Name</span>
                     </div>
                     <div className='add_desc'>
                         <textarea
                             rows={5}
                             required
+                            onChange={handleInputChange}
                         ></textarea>
                         <span className='desc'>Description</span>
                     </div>
                     <div class="inputBox1">
-                        <input type="number" required name='number' />
+                        <input type="number" required name='number' onChange={handleInputChange} />
                         <span class="user">price</span>
                     </div>
                     <div class="inputBox1">
-                        <input type="number" required name='number' />
+                        <input type="number" required name='number' onChange={handleInputChange} />
                         <span class="user">discount</span>
                     </div>
                     <div className='ind_category'>
@@ -165,7 +166,9 @@ function AddProdComp() {
                             </div>
                         </div>
                     )}
-                    <button className='create'>
+                    <button
+                        className='create'
+                        onClick={handleSubmit}>
                         CREATE
                     </button>
                 </div>
