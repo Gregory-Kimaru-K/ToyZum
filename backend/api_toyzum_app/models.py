@@ -1,5 +1,7 @@
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
+import uuid
+from django.utils.text import slugify
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, phone_number, first_name, last_name, password=None, **extra_fields):
@@ -25,7 +27,7 @@ class CustomUserManager(BaseUserManager):
 
         return self.create_user(email, phone_number, first_name, last_name, password, **extra_fields)
 
-class CustomUser(AbstractBaseUser):
+class CustomUser(AbstractBaseUser, PermissionsMixin):
     ROLE_CHOICES = [
         ('SUPERUSER', 'Superuser'),
         ('SELLER', 'Seller'),
@@ -39,17 +41,59 @@ class CustomUser(AbstractBaseUser):
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='END_USER')
-    groups = models.ManyToManyField('auth.Group', related_name='custom_users_set', blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.', verbose_name='groups')
-    user_permissions = models.ManyToManyField('auth.Permission', related_name='custom_users_set', blank=True, help_text='Specific permissions for this user.', verbose_name='user permissions')
-
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['phone_number', 'first_name', 'last_name']
 
+class Industry(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    image = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    slug = models.TextField(unique=True, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.name)
+            slug = base_slug
+            c = 1
+
+            while Industry.objects.filter(slug=slug).exists():
+                unique_part = f"{uuid.uuid4().hex[:8]}{self.id}"
+                slug = f'{base_slug}-{unique_part}'
+
+                c += 1
+
+                if c > 20:
+                    raise ValueError("Cannot generate unique slug")
+                
+            self.slug = slug
+        return super().save(*args, **kwargs)
+
 class Category(models.Model):
     name = models.CharField(max_length=100)
     image = models.TextField(null=True, blank=True)
+    industry = models.ForeignKey(Industry, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    slug = models.TextField(unique=True, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.name)
+            slug = base_slug
+            c = 1
+
+            while Category.objects.filter(slug=slug).exists():
+                unique_part = f"{uuid.uuid4().hex[:8]}{self.id}"
+                slug = f'{base_slug}-{unique_part}'
+
+                c += 1
+
+                if c > 20:
+                    raise ValueError("Cannot generate unique slug")
+                
+            self.slug = slug
+        return super().save(*args, **kwargs)
 
 class Product(models.Model):
     GENDER_CHOICES = [
@@ -60,22 +104,44 @@ class Product(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    discounted_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     images = models.JSONField(default=list)
     quantity = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
     seller = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    featured = models.BooleanField(default=False)
+    flash_sale = models.BooleanField(default=False)
+    verified = models.BooleanField(default=False)
+    slug = models.TextField(unique=True, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.name)
+            slug = base_slug
+            c = 1
+
+            while Product.objects.filter(slug=slug).exists():
+                unique_part = f"{uuid.uuid4().hex[:8]}{self.id}"
+                slug = f'{base_slug}-{unique_part}'
+
+                c += 1
+
+                if c > 20:
+                    raise ValueError("Cannot generate unique slug")
+                
+            self.slug = slug
+        return super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
-    
+
 class Order(models.Model):
     CHOICES = [
         ("PENDING", "pending confirmation"),
         ('CONFIRMED', "Confirmed"),
         ("SHIPPING", "Shipping"),
-        ("SHIPPED", "Shipped"),
         ("DELIVERED", "Delivered"),
         ("CANCELLED", "Cancelled")
     ]
@@ -84,4 +150,79 @@ class Order(models.Model):
     client = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     status = models.CharField(max_length=15, choices=CHOICES, default="PENDING")
     created_at = models.DateTimeField(auto_now_add=True)
+    ordered_quantity = models.IntegerField(default=1)
     is_canceled = models.BooleanField(default=False)
+    slug = models.TextField(unique=True, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_product_slug = f'{self.product.name}order'
+            base_slug = slugify(base_product_slug)
+            slug = base_slug
+            c = 1
+
+            while Product.objects.filter(slug=slug).exists():
+                unique_part = f"{uuid.uuid4().hex[:8]}{self.id}"
+                slug = f'{base_slug}-{unique_part}'
+
+                c += 1
+
+                if c > 20:
+                    raise ValueError("Cannot generate unique slug")
+                
+            self.slug = slug
+        return super().save(*args, **kwargs)
+
+class Adverts(models.Model):
+    CHOICES = [
+        ("MAIN", "main"),
+        ("SIDE", "side"),
+    ]
+    image = models.TextField(null=True, blank=True)
+    file_type = models.CharField(max_length=50, null=True, blank=True)
+    url = models.TextField(null=True, blank=True)
+    slug = models.TextField(null=True, blank=True, unique=True)
+    place = models.CharField(max_length=20, choices=CHOICES, default="MAIN")
+
+    def save(self, *args, **kwargs):
+            if not self.slug:
+                base_product_slug = f'advert{self.place}'
+                base_slug = slugify(base_product_slug)
+                slug = base_slug
+                c = 1
+
+                while Adverts.objects.filter(slug=slug).exists():
+                    unique_part = f"{uuid.uuid4().hex[:8]}{self.id}"
+                    slug = f'{base_slug}-{unique_part}'
+
+                    c += 1
+
+                    if c > 20:
+                        raise ValueError("Cannot generate unique slug")
+                    
+                self.slug = slug
+            return super().save(*args, **kwargs)
+class Cart(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    buyer = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=1)
+    slug = models.TextField(unique=True, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_product_cart = f"{self.product.name}{self.buyer.first_name}Cart"
+            base_slug = slugify(base_product_cart)
+            slug = base_slug
+            c = 1
+
+            while Product.objects.filter(slug=slug).exists():
+                unique_part = f"{uuid.uuid4().hex[:8]}{self.id}"
+                slug = f'{base_slug}-{unique_part}'
+
+                c += 1
+
+                if c > 20:
+                    raise ValueError("Cannot generate unique slug")
+
+            self.slug = slug
+        return super().save(*args, **kwargs)

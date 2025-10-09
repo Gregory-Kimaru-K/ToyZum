@@ -1,13 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser, Product, Category, Order
-from pymongo import MongoClient
-from gridfs import GridFS
-from backend.settings import MONGO_URI
-
-
-mongo_client = MongoClient(MONGO_URI)
-db = mongo_client['toyzum']
-fs = GridFS(db)
+from .models import CustomUser, Product, Category, Order, Adverts, Cart
 
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -37,25 +29,9 @@ class SellerSerializer(serializers.ModelSerializer):
         fields = ["id", "phone_number", "email"]
 
 class ProductSerializer(serializers.ModelSerializer):
-    seller = SellerSerializer(read_only=True)
     class Meta:
         model = Product
         fields = '__all__'
-
-    def create(self, validated_data):
-        product = Product.objects.create(**validated_data)
-        return product
-    
-    def update(self, instance, validated_data):
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-
-        instance.save()
-        return instance
-    
-    def delete(self, instance):
-        instance.delete()
-        return
     
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -63,9 +39,22 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class OrderSerializer(serializers.Serializer):
+class OrderSerializer(serializers.ModelSerializer):
     product = ProductSerializer(read_only=True)
-
+    client = CustomUserSerializer(read_only=True)
     class Meta:
         model = Order
         fields = '__all__'
+
+
+class CartSerializer(serializers.ModelSerializer):
+    product = ProductSerializer(read_only = True)
+
+    class Meta:
+        model = Cart
+        fields = "__all__"
+
+class AdvertSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Adverts
+        fields = "__all__"

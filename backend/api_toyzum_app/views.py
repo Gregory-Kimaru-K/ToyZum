@@ -1,8 +1,8 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
-from .serializers import CustomUserSerializer, ProductSerializer, CategorySerializer, OrderSerializer
-from .models import CustomUser, Product, Category,Order
+from .serializers import CustomUserSerializer, ProductSerializer, CategorySerializer, OrderSerializer, AdvertSerializer
+from .models import CustomUser, Product, Category,Order, Adverts
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -27,7 +27,7 @@ def custom_user_update(request, eml):
     except CustomUser.DoesNotExist:
         return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
     
-    serializer = CustomUserSerializer(user, data=request.data)
+    serializer = CustomUserSerializer(user, data=request.data, partial=True)
 
     if serializer.is_valid():
         serializer.save()
@@ -43,7 +43,7 @@ def product_view_create(request):
     if request.user.role not in ['SUPERUSER', 'SELLER']:
         return Response({"error": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)
     
-    data = request.data
+    data = request.data.copy()
     data['seller'] = request.user.id
     serializer = ProductSerializer(data=data)
 
@@ -53,44 +53,34 @@ def product_view_create(request):
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['GET'])
-def get_product(request, pk):
+@api_view(["GET"])
+def get_product(request, slug):
     try:
-        product = Product.objects.get(pk=pk)
-    
+        product = Product.objects.get(slug=slug)
+
     except Product.DoesNotExist:
         return Response({"error": "Product does not exist"}, status=status.HTTP_404_NOT_FOUND)
-    
+
     serializer = ProductSerializer(product)
 
     return Response(serializer.data, status=status.HTTP_200_OK)
 
-
-@api_view(['GET'])
-def get_products(request):
-    category_id = request.GET.get('category', None)
-
-    if not category_id:
-        return Response({"error": "Category id required"}, status=status.HTTP_400_BAD_REQUEST)
-
-    product = Product.objects.filter(category=category_id)
-
-    if not product.exists():
-        return Response({'error': "No product of this category found"}, status=status.HTTP_404_NOT_FOUND)
-
-    serializer = ProductSerializer(product, many=True)
-
-    return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-
-
 class ProductView(APIView):
     permission_classes = [IsAuthenticated]
-
-    def put(self, pk, request):
+    def get(self, request, slug):
         try:
-            product = product.objects.get(pk=pk)
+            product = Product.objects.get(slug=slug)
+        
+        except Product.DoesNotExist:
+            return Response({"error": "Product does not exist"}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = ProductSerializer(product)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, slug, request):
+        try:
+            product = product.objects.get(slug=slug)
             if (request.user.role == 'SELLER' and request.user == product.seller) or request.user.role !='SUPERUSER':
                 serializer = ProductSerializer(product, data=request.data)
                 if serializer.is_valid():
@@ -104,9 +94,9 @@ class ProductView(APIView):
         except Product.DoesNotExist:
             return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
 
-    def delete(self, pk, request):
+    def delete(self, slug, request):
         try:
-            product = product.objects.get(pk=pk)
+            product = product.objects.get(slug=slug)
 
             if (request.user.role == 'SELLER' and request.user == product.seller) or request.user.role !='SUPERUSER':
                 product.delete()
@@ -117,28 +107,23 @@ class ProductView(APIView):
             
         except Product.DoesNotExist:
             return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
-        
-@api_view(['GET'])
-def read_category(request):
-    categories = Category.objects.all()
-    serializer = CategorySerializer(categories, many=True)
 
-    return Response(serializer.data, status=status.HTTP_200_OK)
+@api_view(['POST'])
+@permission_classes([IsAdminUser])
+def create_category(request):
+    data = request.data
+    serializer = CategorySerializer(data=data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CategoryView(APIView):
     permission_classes = [IsAdminUser]
 
-    def post(self, request, *args, **kwargs):
-        name = request.data.get("name")
-        image = request.data.get("image")
-        
-        category = Category.objects.create(name=name, image=image)
-        return Response({"message": "Category created successfully", "category_id": category.id}, status=status.HTTP_201_CREATED)
-            
-    
-    def put(self, request, pk):
+    def put(self, request, slug):
         try:
-            category = Category.objects.get(pk=pk)
+            category = Category.objects.get(slug=slug)
 
         except Category.DoesNotExist:
             return Response({'error': "Category does not exist"}, status=status.HTTP_204_NO_CONTENT)
@@ -148,41 +133,36 @@ class CategoryView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
-        
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    def delete(self, request, pk):
+    def delete(self, request, slug):
         try:
-            category = Category.objects.get(pk=pk)
+            category = Category.objects.get(slug=slug)
             category.delete()
             return Response({'message': 'Deleted successfully'}, status=status.HTTP_200_OK)
         
         except Category.DoesNotExist:
             return Response({"error": "Category does not exist"}, status=status.HTTP_400_BAD_REQUEST)
+        
+#ORDER VIEWS
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def create_order(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-
-    order = Order.objects.create(product=product, client=request.user)
-
+    if product.seller == request.user:
+        return Response({"detail": "Cannot create order for your products"})
+    data = request.data
+    quantity = data.get("quantity")
+    order = Order.objects.create(ordered_quantity = quantity, client=request.user, product=product)
     serializer = OrderSerializer(order)
 
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
-def get_orders(request):
-    if request.user.role == ["SUPERUSER", "SELLER"]:
-        ordered_products = Order.objects.filter(product__seller = request.user)
-
-        if not ordered_products.exists():
-            return Response({"message": "No products found"}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = OrderSerializer(ordered_products, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
+def get_orders(request):   
     ordered_products = Order.objects.filter(client=request.user)
     if not ordered_products.exists():
         return Response({"message": "No products found"}, status=status.HTTP_404_NOT_FOUND)
@@ -190,17 +170,30 @@ def get_orders(request):
     serializer = OrderSerializer(ordered_products, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_myorders(request):
+    if request.user.role in ["SUPERUSER", "SELLER"]:
+        ordered_products = Order.objects.filter(product__seller = request.user)
+
+        if not ordered_products.exists():
+            return Response({"detail": "No products found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = OrderSerializer(ordered_products, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response({"detail": "Endpoint not authorized"}, status=status.HTTP_401_UNAUTHORIZED)
+
 class OrderView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, order_id):
-        order = get_object_or_404(Order, id=order_id)
+    def get(self, request, order_slug):
+        order = get_object_or_404(Order, slug=order_slug)
 
         serilizer = OrderSerializer(order)
         return Response(serilizer.data, status=status.HTTP_200_OK)
 
-    def put(self, request, order_id):
-        order = get_object_or_404(Order, id = order_id)
+    def put(self, request, order_slug):
+        order = get_object_or_404(Order, slug=order_slug)
 
         valid_statuses = ["CONFIRMED", "SHIPPING", "SHIPPED", "DELIVERED", "CANCELLED"]
 
@@ -217,3 +210,36 @@ class OrderView(APIView):
         order.save()
 
         return Response({"message": f"Order status updated successfully to {new_status}"}, status=status.HTTP_200_OK)
+    
+
+#Adverts endpoints
+@api_view(["POST"])
+def create_advert(request):
+    serializer = AdvertSerializer(data=request.data)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(["GET"])
+def get_adverts(request):
+    adverts = Adverts.objects.all()
+    serializer = AdvertSerializer(adverts, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+class AdvertView(APIView):
+    def put(self, request, slug):
+        advert = get_object_or_404(slug=slug)
+        serializer = AdvertSerializer(advert, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, slug):
+        advert = get_object_or_404(slug=slug)
+        advert.delete()
+        return Response({"detail": "Deleted successfully"}, status=status.HTTP_200_OK)

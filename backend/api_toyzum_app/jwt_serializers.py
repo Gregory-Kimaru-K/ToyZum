@@ -20,7 +20,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
     def validate(self, attrs):
         UserModel=get_user_model()
-        email_or_phone=attrs.get('email', None) or attrs.get('phone_number', None)
+        email_or_phone=attrs.get('email', None)
         password = attrs.get('password')
 
         if not email_or_phone or not password:
