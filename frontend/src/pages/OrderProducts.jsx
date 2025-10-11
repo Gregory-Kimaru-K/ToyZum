@@ -13,7 +13,7 @@ function OrderProducts() {
   return (
     <div className='order_cart_cont'>
       {myOrders.map(item => (
-        <div className='contain' onClick={() => navigate(`/orders/${item.slug}`)}>
+        <div className='contain' style={{cursor: "pointer"}} onClick={() => navigate(`/orders/${item.slug}`)}>
           <div className='top'>
             <img src={item.product.images[0]} alt='img' />
             <p>{item.client.phone_number}</p>

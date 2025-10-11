@@ -38,12 +38,19 @@ class ProductType(DjangoObjectType):
 class OrderType(DjangoObjectType):
     class Meta:
         model = Order
-        fields = ("id", "slug", "product", "client", "quantity")
+        fields = ("id", "slug", "product", "client", "quantity",
+                  "communication", "is_canceled", "longitude",
+                  "latitude", "status", "town", "county", "country")
 
         filter_fields = {
             "client__email": ["exact"],
-            "product__seller__email": ["exact"]
+            "product__seller__email": ["exact"],
+            "communication": ["exact", "in"],
+            "town": ["exact"],
+            "country": ["exact"],
+            "county": ["exact"],
         }
+
         interfaces = (graphene.relay.Node,)
 
 class Query(graphene.ObjectType):

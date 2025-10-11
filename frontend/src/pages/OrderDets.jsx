@@ -4,9 +4,11 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 import 'swiper/swiper-bundle.css';
 import OrderContext from '../Context/OrderContext';
+import AuthContext from '../Context/AuthContext';
 
 function OrderDets() {
   const { orderid } = useParams()
+  const {user} = useContext(AuthContext)
   const { getOrder, isReady, order } = useContext(OrderContext)
 
   useEffect(() => {
@@ -76,6 +78,19 @@ function OrderDets() {
               <p>{order.product.gender}</p>
             </span>
           </div>
+          <iframe
+            title="Google Maps"
+            src={`https://www.google.com/maps?q=${order.latitude},${order.longitude}&hl=es;z=14&output=embed`}
+            width="100%"
+            height="400px"
+            style={{
+              border: "none",
+              filter: "invert(90%) hue-rotate(180deg)",
+              padding: "20px 0"
+            }}
+            allowFullScreen=""
+            loading="lazy"
+          ></iframe>
           <div className='final'>
             <button>
               Cancel Order

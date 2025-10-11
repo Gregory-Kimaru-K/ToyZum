@@ -151,14 +151,21 @@ class CategoryView(APIView):
 @permission_classes([IsAuthenticated])
 def create_order(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    if product.seller == request.user:
-        return Response({"detail": "Cannot create order for your products"})
-    data = request.data
-    quantity = data.get("quantity")
-    order = Order.objects.create(ordered_quantity = quantity, client=request.user, product=product)
-    serializer = OrderSerializer(order)
 
-    return Response(serializer.data, status=status.HTTP_201_CREATED)
+    if product.seller == request.user:
+        return Response({"detail": "You cannot create an order for your own product."}, status=status.HTTP_400_BAD_REQUEST)
+
+    data = request.data.copy()
+    data["product"] = product.id
+    data["client"] = request.user.id
+
+    serializer = OrderSerializer(data=data)
+    if serializer.is_valid():
+        order = serializer.save()
+        return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
@@ -188,7 +195,8 @@ class OrderView(APIView):
 
     def get(self, request, order_slug):
         order = get_object_or_404(Order, slug=order_slug)
-
+        if request.user != order.client and request.user != order.product.seller:
+            return Response({"detail": "Unauthorized Endpoint"}, status=status.HTTP_400_BAD_REQUEST)
         serilizer = OrderSerializer(order)
         return Response(serilizer.data, status=status.HTTP_200_OK)
 

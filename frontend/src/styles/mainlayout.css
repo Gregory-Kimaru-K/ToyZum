@@ -108,6 +108,8 @@ Trending Products
     position: relative;
     width: 60%;
     height: 88%;
+    border-radius: 24px;
+    overflow: hidden;
     box-shadow: 0px 0px 26px 10px rgba(192,192,192,0.75);
     -webkit-box-shadow: 0px 0px 26px 10px rgba(192,192,192,0.75);
     -moz-box-shadow: 0px 0px 26px 10px rgba(192,192,192,0.75);
@@ -773,6 +775,7 @@ ORDER CART CONTAINERS
     -webkit-box-shadow: 0px 0px 30px 4px rgba(192,192,192,0.8);
     -moz-box-shadow: 0px 0px 30px 4px rgba(192,192,192,0.8);
     border-radius: 32px;
+    cursor: pointer;
 }
 
 .order_cart_cont .contain .top {

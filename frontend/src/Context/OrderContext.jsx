@@ -159,7 +159,7 @@ export const OrderProvider = ({children}) => {
         
     }, [token])
 
-    const updateStatus = useCallback(async (id) => {
+    const updateStatus = useCallback(async (id, status) => {
         if (!token){
             console.error("NO TOKEN")
             return;
@@ -170,6 +170,9 @@ export const OrderProvider = ({children}) => {
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type":"application/json"
+                },
+                body: {
+                    "status": status
                 }
             })
             if (response.status === 200){

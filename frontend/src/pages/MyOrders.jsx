@@ -1,9 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react'
-import Toy7 from "../assets/toy7.png"
+import React, { useContext, useEffect } from 'react'
 import OrderContext from '../Context/OrderContext'
+import { useNavigate } from 'react-router-dom'
 
 function MyOrders() {
-  const [quantity, setQuantity] = useState(1)
+  const navigate = useNavigate()
   const {orders, getOrders, isReady} = useContext(OrderContext)
   useEffect(() => {
     if (isReady){
@@ -16,7 +16,7 @@ function MyOrders() {
   return (
     <div className='order_cart_cont'>
       {orders.map(item => (
-        <div className='contain'>
+        <div className='contain' onClick={() => navigate(`/orders/${item.slug}`)}>
           <div className='top'>
             <img src={item.product.images[0]} alt='img' />
             <p>{item.product.name}</p>

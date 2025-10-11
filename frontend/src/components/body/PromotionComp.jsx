@@ -121,9 +121,35 @@ function PromotionComp() {
           }}
           pagination={{
             clickable: true,
-            // return only the class (no inline style background)
-            renderBullet: (index, className) => `<span class="${className}" style="display:inline-block;width:64px;height:5px;margin:0 6px;background:#041C42;border-radius:12px;transition:0.5s;"></span>`
+            renderBullet: (index, className) => {
+              const advert = mainAdverts[index];
+              if (!advert) {
+                return `<span class="${className}" style="width:40px;height:40px;background:#ccc;border-radius:8px;display:inline-block;margin:0 5px;"></span>`;
+              }
+
+              // if it's an image
+              if (advert.file_type?.startsWith("image/")) {
+                return `
+                  <span class="${className}" style="width:72px;height:72px;display:inline-block;margin:0 5px;border-radius:8px;overflow:hidden;">
+                    <img src="${advert.image}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" />
+                  </span>
+                `;
+              }
+
+              // if it's a video
+              if (advert.file_type?.startsWith("video/")) {
+                return `
+                  <span class="${className}" style="width:72px;height:72px;display:inline-block;margin:0 5px;border-radius:8px;overflow:hidden;">
+                    <video src="${advert.image}" muted autoplay loop playsinline style="width:100%;height:100%;object-fit:cover;border-radius:8px;"></video>
+                  </span>
+                `;
+              }
+
+              // fallback
+              return `<span class="${className}" style="width:40px;height:40px;background:#ccc;border-radius:8px;display:inline-block;margin:0 5px;"></span>`;
+            },
           }}
+
           modules={[Navigation, Pagination, Autoplay]}
           className='swipe'
         >

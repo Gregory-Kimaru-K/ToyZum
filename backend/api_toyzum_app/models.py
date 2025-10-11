@@ -146,10 +146,21 @@ class Order(models.Model):
         ("CANCELLED", "Cancelled")
     ]
 
+    COMMUNICATION = [
+        ("DOORSTEP", "door step delivery"),
+        ("PICKUP", "pick up station"),
+        ("COMMUNICATE", "communicate with seller")
+    ]
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True)
     client = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     status = models.CharField(max_length=15, choices=CHOICES, default="PENDING")
     created_at = models.DateTimeField(auto_now_add=True)
+    communication = models.TextField(default="COMMUNICATE", null=True, blank=True)
+    longitude = models.DecimalField(decimal_places=15, max_digits=300, null=True, blank=True)
+    latitude = models.DecimalField(decimal_places=15, max_digits=300, null=True, blank=True)
+    town = models.TextField(null=True, blank=True)
+    county = models.TextField(null=True, blank=True)
+    country = models.TextField(null=True, blank=True)
     ordered_quantity = models.IntegerField(default=1)
     is_canceled = models.BooleanField(default=False)
     slug = models.TextField(unique=True, null=True, blank=True)
