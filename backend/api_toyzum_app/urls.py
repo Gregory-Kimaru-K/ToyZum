@@ -1,7 +1,7 @@
 from rest_framework_simplejwt.views import TokenRefreshView
 from .jwt_serializers import CustomTokenObtainPairView
 from django.urls import path
-from .views import custom_user_create, custom_user_update, product_view_create, get_product, ProductView, create_category, CategoryView, get_orders, get_myorders, create_order, OrderView, get_adverts, create_advert, AdvertView
+from .views import custom_user_create, custom_user_update, product_view_create, get_product, ProductView, create_category, create_industry, CategoryView, get_orders, get_myorders, create_order, OrderView, get_adverts, create_advert, AdvertView
 from graphene_django.views import GraphQLView
 from django.views.decorators.csrf import csrf_exempt
 
@@ -13,6 +13,7 @@ urlpatterns = [
     path('product/create/', product_view_create, name='product_view_create'),
     path('product/<str:slug>/', ProductView.as_view(), name='product_view_update'),
     path("product/view/<str:slug>/", get_product, name="get_product"),
+    path('industry/new/', create_industry, name='create_industry'),
     path("category/new/", create_category, name="create_category"),
     path('category/<str:slug>/', CategoryView.as_view(), name='category_view_update_delete'),
     path('orders/', get_orders, name='get_orders'),

@@ -43,7 +43,11 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'api_toyzum_app',
-    'graphene_django'
+    'app_accounts',
+    'app_inventory',
+    'app_orders',
+    'app_products',
+    'graphene_django',
     ]
 
 MIDDLEWARE = [
@@ -140,10 +144,10 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'api_toyzum_app.CustomUser'
+AUTH_USER_MODEL = 'app_accounts.CustomUser'
 
 AUTHENTICATION_BACKENDS = [
-    'api_toyzum_app.authentication.CustomUserBackend',
+    'app_accounts.authentication.CustomUserBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
@@ -179,7 +183,7 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 
-    "TOKEN_OBTAIN_SERIALIZER": "api_toyzum_app.jwt_serializers.MyTokenObtainPairSerializer",
+    "TOKEN_OBTAIN_SERIALIZER": "app_accounts.jwt_serializers.MyTokenObtainPairSerializer",
     "TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSerializer",
     "TOKEN_VERIFY_SERIALIZER": "rest_framework_simplejwt.serializers.TokenVerifySerializer",
     "TOKEN_BLACKLIST_SERIALIZER": "rest_framework_simplejwt.serializers.TokenBlacklistSerializer",

@@ -1,69 +1,12 @@
-import { createContext, useEffect, useState } from "react";
-import backendurl from "../constants/constants";
+import { createContext, useContext } from 'react';
+import AuthContext from './AuthContext';
+import { submitJson } from '../lib/api';
 
-const ProductContext = createContext()
-
+const ProductContext = createContext();
 export default ProductContext;
 
-export const ProductProvider = ({children}) => {
-    const [tokens, setTokens] = useState(null)
-    useEffect(() => {
-        try {
-            const tokenData = localStorage.getItem('authTokens')
-
-            if (tokenData !== null) {
-                const parsedTokens = JSON.parse(tokenData)
-                setTokens(parsedTokens.access)
-                console.log(tokens)
-            }
-            else {
-                console.log('Token not found')
-            }
-        }
-
-        catch (error) {
-            console.log(error)
-        }
-    }, [])
-
-
-    const createProduct = async (formData) => {
-        try {
-            const response = await fetch(`${backendurl}product/create/`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${tokens}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            })
-
-            if (response.status === 201) {
-                const data = await response.json()
-                console.log("Success", data)
-            }
-
-            else {
-                const data = await response.json()
-                console.log("Fail", data)
-            }
-        }
-        catch (error) {
-            console.log("ERROR", error)
-        }
-    }
-
-
-    const updateProduct = async (id, FormData) => {}
-    const deleteProduct = async (id, FormData) => {}
-    const contextData = {
-        createProduct: createProduct,
-        updateProduct: updateProduct,
-        deleteProduct: deleteProduct
-    }
-    return(
-        <ProductContext.Provider value={contextData}>
-            {children}
-        </ProductContext.Provider>
-    )
+export function ProductProvider({ children }) {
+  const { authTokens } = useContext(AuthContext);
+  const createProduct = formData => submitJson('product/create/', formData, authTokens?.access);
+  return <ProductContext.Provider value={{ createProduct }}>{children}</ProductContext.Provider>;
 }

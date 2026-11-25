@@ -1,59 +1,35 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
-import AuthContext from "../../Context/AuthContext"
+import { useContext, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import AuthContext from '../../Context/AuthContext';
+import FormField, { PasswordField } from '../ui/FormField';
+import { Notice } from '../ui/Feedback';
+import Icon from '../storefront/Icon';
+import { safeNextPath } from '../../lib/forms';
 
-function FormLogin() {
-    const [loginData, setLoginData] = useState({})
-    const navigate = useNavigate()
-    const location = useLocation()
-    const {loginUser} = useContext(AuthContext)
-    const [errors, setErrors] = useState()
-    const queryParams = new URLSearchParams(location.search)
-    const nextParam = queryParams.get("next")
-
-    const handleOnChange = (e) => {
-        const {name, value} = e.target
-        setLoginData((prev) => ({...prev, [name]: value}))
-    }
-
-    const handleSubmit = async() => {
-        const response = await loginUser(loginData)
-        if (response.success === true){
-            navigate(nextParam ? decodeURIComponent(nextParam) :"/home")
-        } else {
-            setErrors(response.errors)
-        }
-    }
-
-    return (
-        <div className='login'>
-            <div class="container">
-                <div class="card">
-                    <a class="singup">Login</a>
-                    {errors && <p style={{position: "absolute", top: "0px", paddingTop: "32px", fontSize: "1.2rem", paddingBottom: "16px", textAlign: "center", backgroundColor: "rgba(255, 0, 0, 0.4)", width: "100%"}}>{errors}</p>}
-                    <div class="inputBox1">
-                        <input type="text" required name='email' onChange={(e) => handleOnChange(e)} />
-                        <span class="user">Email or Phone Number</span>
-                    </div>
-
-                    <div class="inputBox">
-                        <input type="password" required name='password' onChange={(e) => handleOnChange(e)} />
-                        <span>Password</span>
-                        <Link className='fpass'>Forgot Password</Link>
-                    </div>
-                    <button class="enter" onClick={handleSubmit}>Enter</button>
-                    <p>
-                        Don't have an account? {" "}
-                        <Link 
-                            style={{ fontWeight: "bold", textDecoration: "none", color: "#000000" }}
-                            to={nextParam ? `/auth/signup?next=${encodeURIComponent(nextParam)}` :"/auth/signup"}>
-                            Signup
-                        </Link>
-                    </p>
-                </div>
-            </div>
-        </div>
-    )
+export default function FormLogin() {
+  const [loginData, setLoginData] = useState({ email: '', password: '' });
+  const [error, setError] = useState('');
+  const [pending, setPending] = useState(false);
+  const { loginUser } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const { search } = useLocation();
+  const next = safeNextPath(new URLSearchParams(search).get('next'));
+  const change = event => { setError(''); setLoginData(previous => ({ ...previous, [event.target.name]: event.target.value })); };
+  async function submit(event) {
+    event.preventDefault();
+    if (pending) return;
+    setPending(true); setError('');
+    try {
+      const result = await loginUser(loginData);
+      if (result.success) navigate(next);
+      else setError(result.errors || 'We couldn’t sign you in. Please try again.');
+    } catch { setError('We couldn’t connect. Please try again.'); }
+    finally { setPending(false); }
+  }
+  return <><p className="gh-eyebrow">PICK UP WHERE YOU LEFT OFF</p><h2>Welcome back.</h2><p className="gh-form-intro">Sign in for your next round of good times.</p><form className="gh-form" onSubmit={submit} aria-busy={pending}>
+    <Notice kind="error">{error}</Notice>
+    <FormField label="Email or phone number" name="email" type="text" autoComplete="username" required value={loginData.email} onChange={change} placeholder="Your email or phone number" />
+    <PasswordField value={loginData.password} onChange={change} />
+    <button className="gh-button" type="submit" disabled={pending}>{pending ? 'Signing in…' : 'Sign in'}<Icon name="arrow" size={18} /></button>
+  </form><p className="gh-auth-switch">New to Gamehouse? <Link to={`/auth/signup?next=${encodeURIComponent(next)}`}>Create an account</Link></p><Link className="gh-auth-browse" to="/home/products">Keep exploring as a guest</Link></>;
 }
-
-export default FormLogin

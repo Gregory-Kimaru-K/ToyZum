@@ -1,143 +1,40 @@
-import { createContext, useEffect, useState } from "react"
-import backendurl from "../constants/constants";
+import { createContext, useCallback, useContext, useState } from 'react';
+import AuthContext from './AuthContext';
+import { requestJson, submitJson } from '../lib/api';
 
-const CategoryContext = createContext()
-
+const CategoryContext = createContext();
 export default CategoryContext;
 
-export const CategoryProvider = ({ children }) => {
-    const [token, setToken] = useState(null)
-    const [categories, setCategories] = useState([])
-    const [industries, setIndustries] = useState([])
-
-    useEffect(() => {
-        try {
-            const tokenData = localStorage.getItem('authTokens')
-
-            if (tokenData !== null){
-                const parsedToken = JSON.parse(tokenData)
-                setToken(parsedToken.access)
-            }
-
-            else {
-                console.log('Token not found')
-            }
-        }
-
-        catch (error) {
-            console.log(error)
-        }
-    }, [])
-
-    const getCategories = async() => {
-        try {
-            const response = await fetch(`${backendurl}toyzum/graphql/`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    query:
-                        `
-                        query {
-                            allCategories {
-                                id
-                                name
-                                slug
-                                image
-                                industry {
-                                    id
-                                    name
-                                    slug
-                                }
-                            }
-                        }
-                        `
-                })
-            })
-            if (response.status === 200){
-                const result = await response.json()
-                setCategories(result.data.allCategories)
-            }
-        }
-
-        catch(error){
-            alert(error instanceof Error? error.message : "Network Error")
-        }
+export function CategoryProvider({ children }) {
+  const { authTokens } = useContext(AuthContext);
+  const [categories, setCategories] = useState([]);
+  const [industries, setIndustries] = useState([]);
+  const [categoryStatus, setCategoryStatus] = useState('idle');
+  const [industryStatus, setIndustryStatus] = useState('idle');
+  const getCategories = useCallback(async () => {
+    setCategoryStatus('loading');
+    try {
+      const result = await requestJson('toyzum/graphql/', { method: 'POST', body: JSON.stringify({ query: '{ allCategories { id name slug image industry { id name slug } } }' }) });
+      if (result.errors || !result.data?.allCategories) throw new Error();
+      setCategories(result.data.allCategories); setCategoryStatus('ready');
+    } catch { setCategoryStatus('error'); }
+  }, []);
+  const getIndustries = useCallback(async () => {
+    setIndustryStatus('loading');
+    try {
+      const result = await requestJson('toyzum/graphql/', { method: 'POST', body: JSON.stringify({ query: '{ allIndustries { id name image slug } }' }) });
+      if (result.errors || !result.data?.allIndustries) throw new Error();
+      setIndustries(result.data.allIndustries); setIndustryStatus('ready');
+    } catch { setIndustryStatus('error'); }
+  }, []);
+  const createCategory = formData => submitJson('category/new/', formData, authTokens?.access);
+  const createIndustry = async formData => {
+    const result = await submitJson('industry/new/', formData, authTokens?.access);
+    if (result.success) {
+      setIndustries(previous => [...previous.filter(item => String(item.id) !== String(result.data.id)), result.data]);
+      setIndustryStatus('ready');
     }
-
-     const getIndustries = async() => {
-        try {
-            const response = await fetch(`${backendurl}toyzum/graphql/`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    query:
-                        `
-                        query {
-                            allIndustries {
-                                id
-                                name
-                                image
-                                slug
-                            }
-                        }
-                        `
-                })
-            })
-            if (response.status === 200){
-                const result = await response.json()
-                setIndustries(result.data.allIndustries)
-            }
-        }
-
-        catch(error){
-            alert(error instanceof Error? error.message : "Network Error")
-        }
-    }
-
-    const createCategory = async (FormData) => {
-        try{
-            const response = await fetch(`${backendurl}category/new/`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json' 
-                },
-                body: JSON.stringify(FormData)
-            })
-
-            if (response.status === 200) {
-                const data = await response.json()
-                console.log(data)
-            }
-            else {
-                const data = await response.json()
-                console.log("Errror else",data)
-            }
-        }
-        catch (error) {
-            console.log(error)
-        }
-    }
-    const updateCategory = (id, FormData) => {}
-    const deleteCategory = (id) => {}
-
-    const contextData = {
-        createCategory: createCategory,
-        updateCategory: updateCategory,
-        deleteCategory: deleteCategory,
-        getCategories,
-        categories,
-        getIndustries,
-        industries
-    }
-
-    return(
-        <CategoryContext.Provider value={contextData}>
-            {children}
-        </CategoryContext.Provider>
-    )
+    return result;
+  };
+  return <CategoryContext.Provider value={{ categories, industries, getCategories, getIndustries, categoryStatus, industryStatus, createCategory, createIndustry }}>{children}</CategoryContext.Provider>;
 }

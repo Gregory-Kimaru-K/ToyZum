@@ -1,0 +1,88 @@
+:root { color-scheme: light; }
+.gh-theme-toggle { display: inline-grid; place-items: center; flex-shrink: 0; width: 40px; min-height: 44px; border: 1px solid var(--gh-line); border-radius: 7px; background: transparent; color: var(--gh-ink); cursor: pointer; }
+.gh-theme-toggle:hover { background: #edf1e3; }
+.gh-auth-actions { display: flex; align-items: center; gap: 15px; }
+.gh-appearance { margin-bottom: 24px; }
+.gh-appearance > p { color: var(--gh-muted); font-size: 12px; line-height: 1.8; margin-top: 10px; }
+.gh-theme-choices { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 22px; }
+.gh-theme-choices button { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 20px 8px; background: transparent; color: var(--gh-ink); border: 1px solid var(--gh-line); border-radius: 7px; font-size: 12px; }
+.gh-theme-choices button[aria-pressed="true"] { border-color: #708b48; background: #edf3e0; box-shadow: inset 0 0 0 1px #708b48; }
+:root[data-theme="dark"] { color-scheme: dark; --gh-ink: #e6eddf; --gh-muted: #acb9a7; --gh-paper: #151b17; --gh-line: #354339; --gh-lime: #d7ed9d; --gh-dark-surface: #1d2720; --gh-dark-raised: #253128; --gh-dark-accent: #d7ed9d; }
+[data-theme="dark"] body { background: var(--gh-paper); color: var(--gh-ink); }
+[data-theme="dark"] .gh-brand img, [data-theme="dark"] .gh-footer img, [data-theme="dark"] .gh-auth-header img { mix-blend-mode: lighten; }
+[data-theme="dark"] .gh-header, [data-theme="dark"] .gh-mobile-nav, [data-theme="dark"] .gh-account-menu { background: var(--gh-paper); border-color: var(--gh-line); color: var(--gh-ink); }
+[data-theme="dark"] .gh-announcement { background: #101611; color: #d7e6c7; }
+[data-theme="dark"] .gh-search, [data-theme="dark"] .gh-search input, [data-theme="dark"] .gh-filter-panel input, [data-theme="dark"] .gh-catalogue-toolbar select { background: var(--gh-dark-surface); color: var(--gh-ink); border-color: var(--gh-line); }
+[data-theme="dark"] .gh-search button { color: var(--gh-ink); }
+[data-theme="dark"] .gh-search input::placeholder { color: #a6b29f; }
+[data-theme="dark"] .gh-desktop-nav > a, [data-theme="dark"] .gh-nav-note, [data-theme="dark"] .gh-mobile-nav a { color: #aebca8; }
+[data-theme="dark"] .gh-desktop-nav > a.active, [data-theme="dark"] .gh-desktop-nav > a:hover { color: var(--gh-lime); border-bottom-color: var(--gh-lime); }
+[data-theme="dark"] .gh-mobile-nav a.active, [data-theme="dark"] .gh-account-menu a:hover, [data-theme="dark"] .gh-theme-toggle:hover { background: var(--gh-dark-raised); color: var(--gh-lime); }
+[data-theme="dark"] .gh-skip-link { background: var(--gh-lime); color: #1d2a1e; }
+[data-theme="dark"] .gh-button, [data-theme="dark"] .gh-button-light { background: var(--gh-lime); border-color: var(--gh-lime); color: #1c2a1c; }
+[data-theme="dark"] .gh-button:hover { background: #e5f4bd; border-color: #e5f4bd; }
+[data-theme="dark"] .gh-button-outline { background: transparent; color: var(--gh-lime); border-color: #6d8154; }
+[data-theme="dark"] .gh-button-outline:hover { background: var(--gh-dark-raised); }
+[data-theme="dark"] .gh-hero, [data-theme="dark"] .gh-auth-story { background: #242d22; }
+[data-theme="dark"] .gh-hero h1 span, [data-theme="dark"] .gh-auth-story em { color: #c1d891; }
+[data-theme="dark"] .gh-hero-copy > p:not(.gh-eyebrow), [data-theme="dark"] .gh-hero-footnote, [data-theme="dark"] .gh-values p, [data-theme="dark"] .gh-auth-story > p:not(.gh-eyebrow), [data-theme="dark"] .gh-auth-signoff { color: #b6c2aa; }
+[data-theme="dark"] .gh-artwork-label { color: #d8e3ca; }
+[data-theme="dark"] .gh-play-stamp { background: #35452b; border-color: #596c41; color: #d7e6c5; }
+[data-theme="dark"] .gh-audience-tabs button, [data-theme="dark"] .gh-category-chips button { color: #b6c5ac; border-color: var(--gh-line); }
+[data-theme="dark"] .gh-audience-tabs button[aria-pressed="true"], [data-theme="dark"] .gh-category-chips button[aria-pressed="true"] { background: var(--gh-lime); color: #1b291b; border-color: var(--gh-lime); }
+[data-theme="dark"] .gh-discovery { background: #253121; }
+[data-theme="dark"] .gh-discovery-teens { background: #292939; }
+[data-theme="dark"] .gh-discovery-adults { background: #342c23; }
+[data-theme="dark"] .gh-discovery-intro > p, [data-theme="dark"] .gh-discovery-hint { color: #bac5b1; }
+[data-theme="dark"] .gh-interest-grid a { background: #15201799; border-color: #b5c89a22; color: var(--gh-ink); }
+[data-theme="dark"] .gh-interest-grid a:hover { background: #111a14; }
+[data-theme="dark"] .gh-interest-icon { background: #3a4d2e; color: #d1e5ad; }
+[data-theme="dark"] .gh-discovery-teens .gh-interest-icon { background: #44405d; color: #dbd6fa; }
+[data-theme="dark"] .gh-discovery-adults .gh-interest-icon { background: #51412e; color: #f3d7aa; }
+[data-theme="dark"] .gh-product-image, [data-theme="dark"] .gh-gallery-main { background: #273129; }
+[data-theme="dark"] .gh-product-image img, [data-theme="dark"] .gh-gallery-main > img { background: #f5f5ef; border-radius: 8px; }
+[data-theme="dark"] .gh-product-badge, [data-theme="dark"] .gh-product-arrow, [data-theme="dark"] .gh-gallery-thumbnails button { background: var(--gh-dark-surface); color: var(--gh-ink); border-color: var(--gh-line); }
+[data-theme="dark"] .gh-catalogue-state, [data-theme="dark"] .gh-empty, [data-theme="dark"] .gh-loading-message { background: var(--gh-dark-surface); border-color: #46563b; color: var(--gh-muted); }
+[data-theme="dark"] .gh-skeleton > div, [data-theme="dark"] .gh-skeleton > span, [data-theme="dark"] .gh-detail-loading > div:first-child { background: #273329; }
+[data-theme="dark"] .gh-together { background: #263b2b; }
+[data-theme="dark"] .gh-together h2 { color: #f0f4e9; }
+[data-theme="dark"] .gh-footer { background: #111812; border-color: var(--gh-line); }
+[data-theme="dark"] .gh-footer p, [data-theme="dark"] .gh-footer nav a, [data-theme="dark"] .gh-footer-bottom { color: #a6b69e; }
+[data-theme="dark"] .gh-footer-bottom { border-color: var(--gh-line); }
+[data-theme="dark"] .gh-footer-signoff strong { color: #d0dfbf; }
+[data-theme="dark"] .gh-breadcrumb { color: #a7b99b; }
+[data-theme="dark"] .gh-search-chip { background: #2c3b23; }
+[data-theme="dark"] .gh-panel, [data-theme="dark"] .gh-auth-form, [data-theme="dark"] .gh-account-link { background: var(--gh-dark-surface); border-color: var(--gh-line); }
+[data-theme="dark"] .gh-panel-heading p, [data-theme="dark"] .gh-field-hint, [data-theme="dark"] .gh-account-link p, [data-theme="dark"] .gh-auth-footer { color: var(--gh-muted); }
+[data-theme="dark"] .gh-field > label, [data-theme="dark"] .gh-detail-buy > label { color: #c1d0b7; }
+[data-theme="dark"] .gh-field input:not([type="checkbox"]):not([type="radio"]), [data-theme="dark"] .gh-field textarea, [data-theme="dark"] .gh-field select, [data-theme="dark"] .gh-quantity input { background: #151e18; border-color: #485b44; color: var(--gh-ink); }
+[data-theme="dark"] .gh-field input::placeholder, [data-theme="dark"] .gh-field textarea::placeholder { color: #9dae93; }
+[data-theme="dark"] .gh-field input[type="file"]::file-selector-button, [data-theme="dark"] .gh-step-number, [data-theme="dark"] .gh-empty-icon, [data-theme="dark"] .gh-profile-avatar { background: #33442a; color: #d3e7b0; }
+[data-theme="dark"] .gh-password > button, [data-theme="dark"] .gh-auth-browse { color: #c1d993; }
+[data-theme="dark"] .gh-notice { background: #263421; border-color: #495b39; color: #c7d6b8; }
+[data-theme="dark"] .gh-notice-error { background: #3d2821; border-color: #765040; color: #ffc8af; }
+[data-theme="dark"] .gh-notice-success { background: #263d20; border-color: #4c6938; color: #d0e9b6; }
+[data-theme="dark"] .gh-upload { background: #202d20; border-color: #5c7649; }
+[data-theme="dark"] .gh-upload-previews > div, [data-theme="dark"] .gh-media-preview { background: #27332a; border-color: var(--gh-line); }
+[data-theme="dark"] .gh-upload-previews button { background: #152019; border-color: #5b7050; color: #e6eddf; }
+[data-theme="dark"] .gh-upload-previews span { background: #334d28; color: #dbebca; }
+[data-theme="dark"] .gh-auth-layout { background: var(--gh-paper); }
+[data-theme="dark"] .gh-auth-form .react-tel-input input.form-control { background: #151e18; border-color: #485b44; color: var(--gh-ink); }
+[data-theme="dark"] .gh-auth-form .react-tel-input .flag-dropdown, [data-theme="dark"] .gh-auth-form .react-tel-input .selected-flag:hover, [data-theme="dark"] .gh-auth-form .react-tel-input .selected-flag:focus { background: #2e3c2a; border-color: #485b44; }
+[data-theme="dark"] .gh-auth-form .react-tel-input .country-list, [data-theme="dark"] .gh-auth-form .react-tel-input .country-list .search { background: #1d2720; color: #e6eddf; }
+[data-theme="dark"] .gh-auth-form .react-tel-input .country-list .country:hover, [data-theme="dark"] .gh-auth-form .react-tel-input .country-list .country.highlight { background: #34472c; }
+[data-theme="dark"] .gh-stock { color: #bfd990; }
+[data-theme="dark"] .gh-stock-empty { color: #efbd95; }
+[data-theme="dark"] .gh-quantity { border-color: #506044; }
+[data-theme="dark"] .gh-quantity button { background: #314329; color: var(--gh-ink); }
+[data-theme="dark"] .gh-bag-image, [data-theme="dark"] .gh-order-image { background: #2a3728; color: #c2d5a6; }
+[data-theme="dark"] .gh-bag-summary, [data-theme="dark"] .gh-management { background: #22301f; }
+[data-theme="dark"] .gh-bag-summary > div:not(.gh-notice), [data-theme="dark"] .gh-definition-list > div { border-color: var(--gh-line); }
+[data-theme="dark"] .gh-management a { background: #18221a; border-color: #45553a; color: #d4e1c6; }
+[data-theme="dark"] .gh-account-link:hover, [data-theme="dark"] .gh-order-card:hover { background: #253320; }
+[data-theme="dark"] .gh-status-badge { background: #33482a; color: #cee5ab; }
+[data-theme="dark"] .gh-bag-item-end > button, [data-theme="dark"] .gh-signout { color: #e7b69a; }
+[data-theme="dark"] .gh-theme-choices button[aria-pressed="true"] { background: #314526; border-color: var(--gh-lime); box-shadow: inset 0 0 0 1px var(--gh-lime); }
+[data-theme="dark"] .gh-storefront a:focus-visible, [data-theme="dark"] .gh-storefront button:focus-visible, [data-theme="dark"] .gh-storefront input:focus-visible, [data-theme="dark"] .gh-storefront select:focus-visible, [data-theme="dark"] .gh-storefront textarea:focus-visible, [data-theme="dark"] .gh-header button:focus-visible, [data-theme="dark"] .gh-header a:focus-visible, [data-theme="dark"] .gh-mobile-nav a:focus-visible { outline-color: var(--gh-lime); }
+@media (min-width: 950px) { [data-theme="dark"] .gh-auth-form { background: transparent; } }
+@media (max-width: 380px) { .gh-header-main .gh-brand { width: 135px; } .gh-header-actions { gap: 8px; } .gh-header-main { column-gap: 12px; } .gh-theme-choices { gap: 7px; } }

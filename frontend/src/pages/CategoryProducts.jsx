@@ -1,156 +1,52 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
-import CategoryContext from '../Context/CategoryContext'
-import FilterComp from '../components/body/FilterComp'
-import backendurl from '../constants/constants'
-import IsMobileContext from '../Context/IsMobileContext'
+import { useContext, useEffect, useMemo, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import AuthContext from '../Context/AuthContext';
+import useCatalogue from '../hooks/useCatalogue';
+import { filterCatalogue, productPrice } from '../lib/catalogue';
+import ProductCard from '../components/storefront/ProductCard';
+import CatalogueState from '../components/storefront/CatalogueState';
+import Icon from '../components/storefront/Icon';
+import FooterComp from '../components/body/FooterComp';
 
-function CategoryProducts() {
-    const {isMobile} = useContext(IsMobileContext)
-    const navigate = useNavigate()
-    const location = useLocation()
-    const params = new URLSearchParams(location.search)
-    const [products, setProducts] = useState([])
-    const {industries, categories, getIndustries, getCategories} = useContext(CategoryContext)
+export default function CategoryProducts() {
+  const [params, setParams] = useSearchParams();
+  const { user } = useContext(AuthContext);
+  const { products, categories, status, retry } = useCatalogue(params.get('sellerEmail'), params.get('gender'));
+  const [limit, setLimit] = useState(24);
+  const query = params.get('q') || '';
+  const category = params.get('categoryId') || '';
+  const sort = params.get('sort') || 'recommended';
+  const isSeller = user && ['SELLER', 'SUPERUSER'].includes(user.role);
+  const selectedCategory = categories.find(item => item.slug === category);
+  const activeFilters = ['categoryId', 'industryId', 'price_Gt', 'price_Lt', 'gender'].some(key => params.has(key));
 
-    const [filters, setFilters] = useState({
-        categoryId: params.get("categoryId") || null,
-        industryId: params.get("industryId") || null,
-        price_Lt: params.get("price_Lt") || null,
-        price_Gt: params.get("price_Gt") || null,
-        gender: params.get("gender") || null,
-        sellerEmail: params.get("sellerEmail") || null
-    })
+  useEffect(() => { setLimit(24); }, [params]);
 
-    useEffect(() => {
-        setFilters({
-            categoryId: params.get("categoryId") || null,
-            industryId: params.get("industryId") || null,
-            price_Lt: params.get("price_Lt") || null,
-            price_Gt: params.get("price_Gt") || null,
-            gender: params.get("gender") || null,
-            sellerEmail: params.get("sellerEmail") || null
-        })
-    }, [location.search])
+  const filtered = useMemo(() => {
+    const result = filterCatalogue(products, params);
+    if (sort === 'price-low') result.sort((a, b) => productPrice(a) - productPrice(b));
+    else if (sort === 'price-high') result.sort((a, b) => productPrice(b) - productPrice(a));
+    else if (sort === 'name') result.sort((a, b) => a.name.localeCompare(b.name));
+    else result.sort((a, b) => Number(b.featured) - Number(a.featured));
+    return result;
+  }, [products, params, sort]);
 
-    const [filterDisplay, setFilterDisplay] = useState(false)
+  function update(key, value) {
+    setParams(previous => { const next = new URLSearchParams(previous); if (value) next.set(key, value); else next.delete(key); return next; });
+  }
 
-    useEffect(() => {
-        const qs = new URLSearchParams()
-        Object.entries(filters).forEach(([key, val]) => {
-            if (val) qs.set(key, val)
-        })
-        navigate(`/home/products?${qs.toString()}`, {replace: true})
-    }, [filters])
-    useEffect(() => {
-        async function fetchProducts(){
-            try{
-                const query = `
-                    query getProducts(
-                        $categoryId: String
-                        $industryId: String
-                        $sellerEmail: String
-                        $price_Lt: Decimal
-                        $price_Gt: Decimal
-                        $gender: ApiToyzumAppProductGenderChoices
-                    ) {
-                        allProducts(
-                            category_Slug: $categoryId
-                            category_Industry_Slug: $industryId
-                            price_Lt: $price_Lt
-                            price_Gt: $price_Gt
-                            gender: $gender
-                            seller_Email: $sellerEmail
-                        ) {
-                            edges {
-                                node {
-                                    id
-                                    name
-                                    price
-                                    slug
-                                    images
-                                    quantity
-                                    gender
-                                    description
-                                    category {
-                                        id
-                                        name
-                                    }
-                                }
-                            }
-                        }
-                    }
-                `
-                const response = await fetch(`${backendurl}toyzum/graphql/`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ query, variables: filters })
-                })
-                const result = await response.json()
+  function clearFilters() {
+    setParams(previous => { const next = new URLSearchParams(previous); ['categoryId', 'industryId', 'price_Gt', 'price_Lt', 'gender'].forEach(key => next.delete(key)); return next; });
+  }
 
-                if (result.errors) {
-                    console.log("GraphQL errors: ", result.errors)
-                    setProducts([])
-                    return
-                }
-                const fetchedProducts = result.data.allProducts.edges.map(edge => edge.node)
-                setProducts(fetchedProducts)
-            } catch (error) {
-                console.log("ERROR", error)
-                setProducts([])
-            }
-        }
-
-        if (categories.length === 0){
-            getCategories()
-        }
-        if (industries.length === 0){
-            getIndustries()
-        }
-        fetchProducts()
-    }, [filters])
-
-    return (
-        <div style={{ width: "100%"}}>
-            {isMobile && 
-                <button
-                    className='filter_btn'
-                    onClick={() => setFilterDisplay(true)}>
-                        <ion-icon name="funnel-outline"></ion-icon> Funnel
-                </button>
-            }
-            {/* PRODUCTS */}
-            <div className='cat-products'>
-                {!isMobile ?(
-                    <FilterComp filters={filters} setFilters={setFilters} categories={categories} industries={industries} setFilterDisplay = {setFilterDisplay} />
-                ):(
-                    filterDisplay === true && (
-                        <FilterComp filters={filters} setFilters={setFilters} categories={categories} industries={industries} setFilterDisplay = {setFilterDisplay} />
-                    )
-                )}
-                <div className='products_cont'>
-                    {products.length > 0 ?
-                        products.map((product, index) => {
-                            const fimage = product.images && product.images.length > 0 ? product.images[0] : null;
-                            return(
-                                <div className='product' key={index} onClick={() => navigate(`/home/${product.slug}`, {state: {product}})}>
-                                    {fimage ? (
-                                        <img src={fimage} alt={product.name} />
-                                    ):
-                                    <p>No image found</p>
-                                    }
-                                    <p className='pname'>{product.name}</p>
-                                    <div className='price_cont'>
-                                        <p className='cart'>Ksh. {product.price}</p>
-                                    </div>
-                                </div>
-                            )
-                        })
-                    :   <p>Nothing to see here</p>}
-                </div>
-            </div>
-        </div>
-    )
+  return <div className="gh-storefront gh-catalogue"><div className="gh-container">
+    <nav className="gh-breadcrumb" aria-label="Breadcrumb"><Link to="/home">Home</Link><span>/</span><span>Shop</span></nav>
+    <div className="gh-catalogue-heading"><div><p className="gh-eyebrow">GOOD TIMES START HERE</p><h1>{params.has('sellerEmail') ? 'Stock catalogue' : query ? `Results for “${query}”` : selectedCategory?.name || 'Find your next favourite.'}</h1><p>Games, toys and little reasons to get together.</p></div>{isSeller && <Link className="gh-button" to="/home/product">Add product <Icon name="box" size={18} /></Link>}</div>
+    <div className="gh-category-chips" aria-label="Product categories"><button aria-pressed={!category} onClick={() => update('categoryId', '')}>All games & toys</button>{categories.map(item => <button key={item.id} aria-pressed={category === item.slug} onClick={() => update('categoryId', item.slug)}>{item.name}</button>)}</div>
+    <div className="gh-catalogue-toolbar"><span role="status">{status === 'loading' ? 'Finding the fun…' : status === 'ready' ? `${filtered.length} ${filtered.length === 1 ? 'find' : 'finds'}` : 'Catalogue unavailable'}</span><label>Sort by <select value={sort} onChange={event => update('sort', event.target.value)}><option value="recommended">Recommended</option><option value="price-low">Price: low to high</option><option value="price-high">Price: high to low</option><option value="name">Name: A–Z</option></select></label></div>
+    <details className="gh-filter-panel"><summary>Filter by budget {activeFilters && <span>• Filters applied</span>}</summary><div><label>Minimum (KES)<input type="number" min="0" step="any" value={params.get('price_Gt') || ''} onChange={event => update('price_Gt', event.target.value)} placeholder="Any" /></label><label>Maximum (KES)<input type="number" min="0" step="any" value={params.get('price_Lt') || ''} onChange={event => update('price_Lt', event.target.value)} placeholder="Any" /></label>{activeFilters && <button className="gh-text-link" onClick={clearFilters}>Clear filters <Icon name="close" size={15} /></button>}</div></details>
+    {query && <div className="gh-search-chip">Search: {query}<button onClick={() => update('q', '')} aria-label="Clear search"><Icon name="close" size={16} /></button></div>}
+    {status === 'ready' && filtered.length > 0 ? <><div className="gh-product-grid">{filtered.slice(0, limit).map(product => <ProductCard key={product.id} product={product} />)}</div>{filtered.length > limit && <div className="gh-load-more"><button className="gh-button gh-button-outline" onClick={() => setLimit(value => value + 24)}>Show more games & toys <Icon name="arrow" size={18} /></button></div>}</> : <CatalogueState status={status} retry={retry} emptyTitle={products.length ? 'No matches this round.' : undefined} emptyText={products.length ? 'Try a different search, category or budget to find your next favourite.' : undefined} />}
+    {status === 'ready' && filtered.length === 0 && (query || activeFilters) && <div className="gh-load-more"><Link className="gh-button gh-button-outline" to="/home/products">Browse all games & toys <Icon name="arrow" size={18} /></Link></div>}
+  </div><FooterComp /></div>;
 }
-
-export default CategoryProducts

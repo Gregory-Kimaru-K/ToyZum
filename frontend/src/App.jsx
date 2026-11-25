@@ -1,6 +1,7 @@
 import { createBrowserRouter, createRoutesFromElements, Navigate, Route, RouterProvider } from "react-router-dom"
 import Home from "./pages/Home"
 import Cart from "./pages/Cart"
+import Inventory from "./pages/Inventory"
 import MainLayout from "./layout/MainLayout"
 import Settings from "./pages/Settings"
 import Profile from "./pages/Profile"
@@ -10,6 +11,7 @@ import AuthLayout from "./layout/AuthLayout"
 import ProductAdd from "./pages/ProductAdd"
 import HomeLayout from "./layout/HomeLayout"
 import CreateCategory from "./pages/CreateCategory"
+import CreateDepartment from "./pages/CreateDepartment"
 import CategoryLayout from "./layout/CategoryLayout"
 import CategoryProducts from "./pages/CategoryProducts"
 import OrderProducts from "./pages/OrderProducts"
@@ -29,11 +31,13 @@ function App() {
             <Route index element={<Home />} />
             <Route path="product" element={<ProductAdd />} />
             <Route path="products" element={<CategoryProducts />}/>
+            <Route path="department/create" element={<CreateDepartment />} />
             <Route path="category" element={<CategoryLayout />}>
               <Route path="create_category" element={<CreateCategory />} />
             </Route>
             <Route path=":productid" element={<ProductDets />} />
           </Route>
+          <Route path="/inventory" element={<Inventory />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/adverts" element={<CreateAdverts />} />
           <Route path="/adverts/:advertid" element={<UpdateAdverts />} />

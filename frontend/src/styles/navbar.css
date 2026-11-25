@@ -1,195 +1,41 @@
-:root {
-    --dark-blue: #041C42;
-    --blue1: rgb(15, 83, 134);
-    --blue2: #40D3E2;
-    --brown1: #913313;
-    --brown2: #EC9E49;
-    --white: #ffffff;
-    --black: #000000;
-    --cards: #1C2841;
-    --orange: rgb(255,69,0);
-    --tomato:  rgb(255,99,71);
-    --crimson: rgb(220,20,60);
+.gh-header { position: sticky; top: 0; z-index: 50; background: #fffefa; color: #263c30; border-bottom: 1px solid #e4e5dc; }
+.gh-header *, .gh-mobile-nav * { font-family: inherit; }
+.gh-announcement { background: #263c30; color: #f6f7ef; text-align: center; padding: 9px 16px; font-size: 11px; letter-spacing: .025em; line-height: 1.4; }
+.gh-announcement span { display: none; }
+.gh-header-main { display: grid; grid-template-columns: 1fr auto; align-items: center; column-gap: 20px; row-gap: 12px; padding-block: 13px; }
+.gh-brand { display: inline-flex; width: 164px; }
+.gh-brand img { width: 100%; height: auto; mix-blend-mode: multiply; }
+.gh-header-actions { display: flex; align-items: center; gap: 14px; }
+.gh-header-actions a, .gh-header-actions button { color: inherit; text-decoration: none; }
+.gh-account { position: relative; }
+.gh-account-button, .gh-cart-link { display: flex; align-items: center; gap: 8px; min-height: 44px; background: none; border: 0; cursor: pointer; font-size: 13px; }
+.gh-account-button > span, .gh-cart-link > span { display: none; }
+.gh-account-menu { position: absolute; top: calc(100% + 7px); right: -16px; width: 200px; max-height: 60vh; overflow: auto; padding: 8px; background: #fffefa; border: 1px solid #e0e4db; box-shadow: 0 15px 35px #263c301a; border-radius: 12px; }
+.gh-account-menu a { display: block; padding: 13px 12px; border-radius: 6px; font-size: 14px; }
+.gh-account-menu a:hover { background: #f1f2e8; }
+.gh-search { grid-column: 1 / -1; grid-row: 2; display: flex; align-items: center; gap: 10px; border: 1px solid #e1e4d9; background: #f4f5ee; padding-left: 14px; border-radius: 8px; }
+.gh-search:focus-within { border-color: #55733b; box-shadow: 0 0 0 2px #bfd78455; }
+.gh-search input { flex: 1; width: 100%; min-width: 0; background: none; border: 0; color: #263c30; font-size: 13px; min-height: 44px; outline: 0; }
+.gh-search input::placeholder { color: #70766b; }
+.gh-search button { display: grid; place-items: center; width: 44px; height: 44px; border: 0; background: none; color: #263c30; cursor: pointer; flex-shrink: 0; }
+.gh-desktop-nav { display: none; }
+.gh-skip-link { position: absolute; top: -100px; left: 16px; padding: 12px 20px; background: #d7ed9d; color: #263c30; z-index: 5; }
+.gh-skip-link:focus { top: 8px; }
+@media (min-width: 768px) {
+  .gh-announcement span { display: inline; margin-left: 8px; opacity: .75; }
+  .gh-announcement { font-size: 12px; }
+  .gh-header-main { grid-template-columns: 210px minmax(200px, 480px) auto; justify-content: space-between; padding-block: 19px; gap: 28px; }
+  .gh-brand { width: 200px; }
+  .gh-search { grid-column: auto; grid-row: auto; }
+  .gh-search input { font-size: 13px; }
+  .gh-header-actions { gap: 24px; }
+  .gh-account-button > span, .gh-cart-link > span { display: inline; }
+  .gh-desktop-nav { display: flex; gap: 26px; align-items: center; min-height: 47px; overflow: auto; scrollbar-width: none; }
+  .gh-desktop-nav > a { display: inline-flex; gap: 8px; align-items: center; flex-shrink: 0; align-self: stretch; text-decoration: none; color: #535b50; font-size: 12px; border-bottom: 2px solid transparent; }
+  .gh-desktop-nav > a:hover, .gh-desktop-nav > a.active { color: #263c30; border-bottom-color: #617446; }
+  .gh-nav-note { display: none; }
 }
-
-* {
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-    font-family: sans-serif;
-}
-
-.navbar {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    height: 60px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: var(--white);
-    z-index: 40;
-    box-shadow: -3px 0px 20px 0px rgba(0,0,0,0.75);
-    -webkit-box-shadow: -3px 0px 20px 0px rgba(0,0,0,0.75);
-    -moz-box-shadow: -3px 0px 20px 0px rgba(0,0,0,0.75);
-}
-
-.navbar a img{
-    width: 56px;
-}
-
-.navbar .search {
-    width: 40%;
-    display: flex;
-    align-items: center;
-}
-
-.navbar .search div{
-    width: 100%;
-    height: auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.navbar .search input {
-    width: 80%;
-    height: 40px;
-    font-size: 1.2rem;
-    background: transparent;
-    border: 2px solid var(--black);
-    border-left: none;
-    border-radius: 20px;
-    border-bottom-left-radius: 0;
-    border-top-left-radius: 0;
-    transition: 1s;
-}
-
-.navbar .search input:focus,
-.navbar .search input:valid {
-    outline: none;
-}
-
-.navbar .search input:focus,
-.navbar .search input:valid {
-    transform: scale(1.04);
-}
-
-#search_icon {
-    position: relative;
-    left: 0;
-    padding: 2px 5px;
-    width: 32px;
-    height: 32px;
-    border: 2px solid var(--black);
-    border-right: none;
-    border-radius: 20px;
-    border-bottom-right-radius: 0;
-    border-top-right-radius: 0;
-    transition: 1s;
-}
-
-.navbar .search div:has(input:focus) #search_icon,
-.navbar .search div:has(input:valid) #search_icon {
-    transform: scale(1.04);
-    left: -6px;
-}
-
-.navbar .search button {
-    width: 30%;
-    height: 32px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: transform .5s, background 2s;
-    background: #DDEFFF;
-}
-
-.navbar .search button:hover {
-    transform: scale(1.1);
-    background: rgb(185,242,255);
-}
-
-.navbar .account {
-    padding-right: 40px;
-    width: 40%;
-    display: flex;
-    justify-content: space-between;
-}
-
-.navbar .account .account-set span {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-}
-
-.navbar .account .account-set .dropdown {
-    width: 108px;
-    position: absolute;
-    top: 110%;
-    background-color: #ffffff;
-    display: flex;
-    align-self: center;
-    flex-direction: column;
-    align-items: center;
-    box-shadow: -3px 0px 20px 0px rgba(0,0,0,0.75);
-    -webkit-box-shadow: -3px 0px 20px 0px rgba(0,0,0,0.75);
-    -moz-box-shadow: -3px 0px 20px 0px rgba(0,0,0,0.75);
-    z-index: 41;
-}
-
-.navbar .account .account-set .dropdown::before {
-    content: "";
-    position: absolute;
-    top: -10px;
-    align-self: center;
-    width: 20px;
-    height: 20px;
-    transform: rotate(45deg);
-    background-color: #ffffff;
-    z-index: -1;
-}
-
-.navbar .account .account-set .dropdown a{
-    width: 100%;
-    padding: 8px;
-    border-bottom: 1px solid rgba(192,192,192,0.4);
-    text-align: center;
-    cursor: pointer;
-    color: #000000;
-    text-decoration: none;
-}
-
-.navbar .account .account-set .dropdown a:hover{
-    background-color: rgba(192,192,192,0.4);
-}
-
-#chev {
-    padding-left: 8px;
-}
-
-#cart,
-.navbar .account .productsvg {
-    width: 28px;
-    height: 28px;
-}
-
-.navbar .account .ordersvg,
-#icon {
-    width: 24px;
-    height: 24px;
-}
-
-@media screen and (max-width: 1100px) {
-    .navbar .search {
-        justify-content: space-between;
-        width: 56%;
-    }
-    .navbar .search button {
-        width: 40%;
-        height: 40px;
-    }
-    .navbar .account {
-        width: 20%;
-    }
+@media (min-width: 1100px) {
+  .gh-nav-note { margin-left: auto; display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; color: #777d70; font-size: 11px; }
+  .gh-nav-note > span { width: 6px; height: 6px; border-radius: 50%; background: #83975c; }
 }

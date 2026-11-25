@@ -1,2 +1,2 @@
-const backendurl = "http://192.168.100.243:8000/api/"
+const backendurl = "http://127.0.0.1:8000/api/"
 export default backendurl

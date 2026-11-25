@@ -1,151 +1,36 @@
-import React, { useContext, useEffect, useState } from 'react'
-import 'react-phone-input-2/lib/style.css'
-import "../../styles/login.css"
-import { Link, useLocation, useNavigate } from 'react-router-dom'
-import AuthContext from '../../Context/AuthContext'
-import PhoneInput from 'react-phone-input-2'
+import { useContext, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import PhoneInputModule from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
+import AuthContext from '../../Context/AuthContext';
+import FormField, { PasswordField } from '../ui/FormField';
+import { Notice } from '../ui/Feedback';
+import Icon from '../storefront/Icon';
+import { safeNextPath } from '../../lib/forms';
 
-function FormCreate() {
-    const [formData, setFormData] = useState({})
-    const { createUser } = useContext(AuthContext)
-    const [error, setError] = useState("")
-    const location = useLocation()
-    const queryParams = new URLSearchParams(location.search)
-    const nextParam = queryParams.get("next")
-    const navigate = useNavigate()
+const PhoneInput = PhoneInputModule.default || PhoneInputModule;
 
-    useEffect(() => {
-        console.log(JSON.stringify(formData))
-    }, [formData])
-    const handleSubmit = async() => {
-        setError({})
-
-        // Name check
-        if (!formData.first_name || !formData.last_name){
-            setError("Please enter Your Name")
-            return
-        }
-
-        // Email check
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!formData.email || !emailRegex.test(formData.email)) {
-            setError("Please enter a valid email address.")
-            return
-        }
-
-        // Phone number check (basic: at least 9–15 digits)
-        const phoneRegex = /^[0-9]{9,15}$/;
-        if (!formData.phone_number || !phoneRegex.test(formData.phone_number)) {
-            setError("Please enter a valid phone number.")
-            return
-        }
-
-        // Password checks
-        if (!formData.password || !formData.cpassword) {
-            setError("Please enter and confirm your password.")
-            return
-        }
-
-        if (formData.password !== formData.cpassword) {
-            setError("Passwords do not match.")
-            return
-        }
-
-        const strongPassword = /^(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]{6,}$/;
-        if (!strongPassword.test(formData.password)) {
-            setError("Password must be at least 6 characters long, contain a number and a special character.")
-            return
-        }
-
-        // If all validations pass
-        setError("")
-        const res = await createUser(formData)
-        if (res.success) {
-            navigate(nextParam ? decodeURIComponent(nextParam) : "/home")
-        }
-        else {
-            setError(res.errors)
-        }
-    }
-
-
-    const handleOnChange = (event) => {
-        setError("")
-        const { name, value } = event.target
-        setFormData((prev) => ({ ...prev, [name]: value }))
-    }
-
-    return (
-        <div className='absol'>
-            <div className="container">
-                <div className="card">
-                    <a className="singup">create account</a>
-                    {error && <p style={{position: "absolute", top: "0px", paddingTop: "32px", fontSize: "1.2rem", paddingBottom: "16px", textAlign: "center", backgroundColor: "rgba(255, 0, 0, 0.4)", width: "100%"}}>{error}</p>}
-                    <div className='name'>
-                        <div className="inputBox name-in">
-                            <input type="text" required name='first_name' onChange={handleOnChange} value={formData.first_name || ""} />
-                            <span className="user">First Name</span>
-                        </div>
-                        <div className="inputBox name-in">
-                            <input type="text" required name='last_name' onChange={handleOnChange} value={formData.last_name || ""} />
-                            <span className="user">Last Name</span>
-                        </div>
-                    </div>
-                    <div className="inputBox1">
-                        <input type="email" required name='email' onChange={handleOnChange} value={formData.email || ""} />
-                        <span className="user">Email</span>
-                    </div>
-                    <div className="inputBox1">
-                        <PhoneInput
-                            country={"ke"}
-                            value={formData.phone_number}
-                            onChange={(phone) => {
-                                setFormData((prev) => ({
-                                    ...prev,
-                                    phone_number: phone
-                                }))
-                            }}
-                            placeholder=''
-                            inputProps={{
-                                name: "phone_number",
-                                required: true
-                            }}
-                            inputStyle={{
-                                width: "100%",
-                                height: "48px",
-                                fontSize: "1em",
-                            }}
-                            buttonStyle={{
-                                border: "none",
-                                background: "none"
-                            }}
-                         />
-                    </div>
-
-                    <div className="inputBox">
-                        <input type="password" required name='password' onChange={handleOnChange} />
-                        <span>Password</span>
-                    </div>
-                    <div className="inputBox1">
-                        <input type="password" required name='cpassword' onChange={handleOnChange} />
-                        <span className="user">Confirm Password</span>
-                    </div>
-                    <button id="enter" onClick={handleSubmit}>Enter</button>
-                    <p>
-                        Have an account?{" "}
-                        <Link
-                            style={{ fontWeight: "bold", textDecoration: "none", color: "#000000" }}
-                            to={
-                                nextParam ?
-                                    `/auth/login?next=${encodeURIComponent(nextParam)}`
-                                : "/auth/login"}>
-                            Login
-                        </Link>
-                    </p>
-                </div>
-            </div>
-        </div>
-    )
+export default function FormCreate() {
+  const [form, setForm] = useState({ first_name: '', last_name: '', email: '', phone_number: '', password: '', cpassword: '' });
+  const [error, setError] = useState('');
+  const [pending, setPending] = useState(false);
+  const { createUser } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const { search } = useLocation();
+  const next = safeNextPath(new URLSearchParams(search).get('next'));
+  const change = event => { setError(''); setForm(previous => ({ ...previous, [event.target.name]: event.target.value })); };
+  async function submit(event) {
+    event.preventDefault();
+    if (pending) return;
+    if (!/^[0-9]{9,15}$/.test(form.phone_number)) { setError('Please enter a valid phone number.'); return; }
+    if (form.password !== form.cpassword) { setError('Your passwords don’t match.'); return; }
+    setPending(true); setError('');
+    try {
+      const result = await createUser(form);
+      if (result.success) navigate(next);
+      else setError(result.errors || 'We couldn’t create your account. Please try again.');
+    } catch { setError('We couldn’t connect. Please try again.'); }
+    finally { setPending(false); }
+  }
+  return <><p className="gh-eyebrow">THERE’S ROOM FOR ONE MORE</p><h2>Join the good times.</h2><p className="gh-form-intro">Create your Gamehouse account.</p><form className="gh-form" onSubmit={submit} aria-busy={pending}><Notice kind="error">{error}</Notice><div className="gh-form-row"><FormField label="First name" name="first_name" autoComplete="given-name" required value={form.first_name} onChange={change} /><FormField label="Last name" name="last_name" autoComplete="family-name" required value={form.last_name} onChange={change} /></div><FormField label="Email address" name="email" type="email" autoComplete="email" required value={form.email} onChange={change} /><FormField label="Phone number" name="phone_number"><PhoneInput country="ke" value={form.phone_number} onChange={phone => setForm(previous => ({ ...previous, phone_number: phone }))} inputProps={{ id: 'phone_number', name: 'phone_number', required: true, autoComplete: 'tel' }} /></FormField><PasswordField autoComplete="new-password" minLength={8} value={form.password} onChange={change} hint="At least 8 characters. Avoid common passwords, all-digit passwords and personal details." /><PasswordField label="Confirm password" name="cpassword" autoComplete="new-password" value={form.cpassword} onChange={change} /><button className="gh-button" type="submit" disabled={pending}>{pending ? 'Creating account…' : 'Create account'}<Icon name="arrow" size={18} /></button></form><p className="gh-auth-switch">Already part of the fun? <Link to={`/auth/login?next=${encodeURIComponent(next)}`}>Sign in</Link></p></>;
 }
-
-export default FormCreate

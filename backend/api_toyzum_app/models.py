@@ -108,7 +108,9 @@ class Product(models.Model):
     images = models.JSONField(default=list)
     quantity = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
+    # Retain the primary category for compatibility with older API clients.
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
+    categories = models.ManyToManyField(Category, related_name="products", blank=True)
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
     seller = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     featured = models.BooleanField(default=False)
@@ -237,3 +239,17 @@ class Cart(models.Model):
 
             self.slug = slug
         return super().save(*args, **kwargs)
+
+class StockMovement(models.Model):
+    MOVEMENT_TYPES = [('OPENING', 'Opening stock'), ('RECEIPT', 'Stock received')]
+    product = models.ForeignKey(Product, on_delete=models.PROTECT, related_name='stock_movements')
+    movement_type = models.CharField(max_length=12, choices=MOVEMENT_TYPES)
+    quantity_change = models.IntegerField()
+    balance_after = models.IntegerField()
+    reference = models.CharField(max_length=200, blank=True)
+    recorded_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    idempotency_key = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+
+    class Meta:
+        ordering = ['-created_at', '-id']

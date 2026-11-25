@@ -1,111 +1,43 @@
-import React, { useContext, useEffect, useState } from 'react';
-import AuthContext from "../Context/AuthContext";
+import { useContext, useEffect, useState } from 'react';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
+import AuthContext from '../Context/AuthContext';
 import CategoryContext from '../Context/CategoryContext';
+import PageShell from '../components/ui/PageShell';
+import FormField from '../components/ui/FormField';
+import { AccessState, Notice } from '../components/ui/Feedback';
+import { readImageFiles } from '../lib/forms';
+import Icon from '../components/storefront/Icon';
 
-function CreateCategory() {
-    const { user } = useContext(AuthContext);
-    const { createCategory,industries, getIndustries } = useContext(CategoryContext)
-    const [FormData, setFormData] = useState({
-        name: '',
-        image: null,
-    });
-
-    useEffect(() => {
-        if (industries.length === 0){
-            getIndustries()
-        }
-    }, [])
-
-    const handleFileChange = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => { 
-                setFormData((prev) => ({
-                    ...prev,
-                    image: reader.result,
-                }));
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    const handleInputChange = (event) => {
-        const { name, value } = event.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
-    };
-
-    const handleSubmit = () => {
-        console.log('Formdata: ', FormData);
-        createCategory(FormData)
-
-    };
-
-    if (user?.role === 'SUPERUSER') {
-        return (
-            <div>
-                <div className="display_image">
-                    {FormData.image && (
-                        <img
-                            src={FormData.image}
-                            alt="Preview"
-                            style={{ maxWidth: '200px', maxHeight: '200px' }}
-                        />
-                    )}
-                </div>
-                <div className="input-div">
-                    <input
-                        type="file"
-                        className="input"
-                        name="images"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                    />
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="1em"
-                        height="1em"
-                        strokeLinejoin="round"
-                        strokeLinecap="round"
-                        viewBox="0 0 24 24"
-                        strokeWidth="2"
-                        fill="none"
-                        stroke="currentColor"
-                        className="icon"
-                    >
-                        <polyline points="16 16 12 12 8 16"></polyline>
-                        <line y2="21" x2="12" y1="12" x1="12"></line>
-                        <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
-                        <polyline points="16 16 12 12 8 16"></polyline>
-                    </svg>
-                </div>
-                <div className="inputBox input_add_prod">
-                    <input
-                        type="text"
-                        required
-                        name="name"
-                        onChange={handleInputChange}
-                    />
-                    <span>Name</span>
-                </div>
-                <div className='radio'>
-                    {industries.map((industry) => (
-                        <div key={industry.id}>
-                            <input type='radio' name='industry' value={industry.id}
-                            onChange={handleInputChange} />
-                            <label>{industry.name}</label>
-                        </div>
-                    ))}
-                </div>
-                <button onClick={handleSubmit}>Submit</button>
-            </div>
-        );
-    } else {
-        return <p>Unauthorized Endpoint</p>;
-    }
+export default function CreateCategory() {
+  const { user } = useContext(AuthContext);
+  const { createCategory, industries, getIndustries, industryStatus } = useContext(CategoryContext);
+  const location = useLocation();
+  const [params] = useSearchParams();
+  const [form, setForm] = useState(() => ({ name: location.state?.categoryDraft?.name || '', image: location.state?.categoryDraft?.image || null, industry: params.get('departmentId') || location.state?.categoryDraft?.industry || '' }));
+  const [pending, setPending] = useState(false);
+  const [reading, setReading] = useState(false);
+  const [error, setError] = useState('');
+  const [saved, setSaved] = useState(false);
+  const allowed = user?.role === 'SUPERUSER';
+  useEffect(() => { if (allowed) getIndustries(); }, [allowed, getIndustries]);
+  async function imageChanged(event) {
+    if (!event.target.files.length) return;
+    setReading(true); setError('');
+    try { const [image] = await readImageFiles(event.target.files); setForm(previous => ({ ...previous, image })); }
+    catch (err) { setError(err.message); }
+    finally { setReading(false); }
+  }
+  async function submit(event) {
+    event.preventDefault();
+    if (pending || reading) return;
+    setPending(true); setError(''); setSaved(false);
+    try {
+      const result = await createCategory(form);
+      if (result.success) { setSaved(true); setForm({ name: '', image: null, industry: '' }); }
+      else setError(result.errors);
+    } catch { setError('We couldn’t save the category. Please try again.'); }
+    finally { setPending(false); }
+  }
+  const change = event => { setSaved(false); setForm(previous => ({ ...previous, [event.target.name]: event.target.value })); };
+  return <PageShell title="A place for every game." eyebrow="STORE MANAGEMENT" description="Create a category to keep the shelves easy to explore.">{!allowed ? <AccessState seller next="/home/category/create_category" /> : <form className="gh-form gh-panel gh-form-narrow" onSubmit={submit} aria-busy={pending || reading}><h2>Create category</h2><Link className="gh-text-link" to="/home/department/create?next=category" state={{ categoryDraft: form }}>Add a department <Icon name="arrow" size={16} /></Link><Notice kind="error">{error}</Notice><Notice kind="success">{saved && 'Category created. You can now use it when adding products.'}</Notice><FormField label="Category name" name="name" required value={form.name} onChange={change} /><FormField label="Department" name="industry"><select id="industry" name="industry" required value={form.industry} onChange={change}><option value="">Choose a department</option>{industries.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></FormField>{industryStatus === 'error' && <Notice kind="error">Departments couldn’t be loaded. <button type="button" className="gh-inline-button" onClick={getIndustries}>Try again</button></Notice>}{industryStatus === 'ready' && !industries.length && <Notice>No departments are available yet. Use “Add a department” above to create one, then continue with this category.</Notice>}<FormField label="Category image (optional)" name="category-image" type="file" accept="image/*" onChange={imageChanged} />{form.image && <img className="gh-media-preview" src={form.image} alt="Category preview" />}<button className="gh-button" disabled={pending || reading || !industries.length}>{pending ? 'Creating category…' : 'Create category'}<Icon name="arrow" size={18} /></button></form>}</PageShell>;
 }
-
-export default CreateCategory;

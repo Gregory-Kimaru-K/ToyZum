@@ -1,94 +1,20 @@
-import React, { useEffect, useState } from 'react'
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import PageShell from '../components/ui/PageShell';
+import QuantityControl from '../components/ui/QuantityControl';
+import { EmptyState, Notice } from '../components/ui/Feedback';
+import Icon from '../components/storefront/Icon';
+import { formatPrice } from '../components/storefront/ProductCard';
+import { productPrice } from '../lib/catalogue';
+import { cartQuantity, readCart } from '../lib/cart';
 
-function Cart() {
-  const [cart, setCart] = useState([])
-
-  // Load cart from localStorage on mount
-  useEffect(() => {
-    const savedCart = JSON.parse(localStorage.getItem("cart")) || []
-    setCart(savedCart)
-  }, [])
-
-  // Remove item from cart
-  const handleRemove = (id) => {
-    const updatedCart = cart.filter(item => item.id !== id)
-    setCart(updatedCart)
-    localStorage.setItem("cart", JSON.stringify(updatedCart))
+export default function Cart() {
+  const [cart, setCart] = useState(() => readCart(localStorage).map(item => ({ ...item, cartQuantity: cartQuantity(item.cartQuantity, item.quantity) })));
+  const [error, setError] = useState('');
+  function save(next) {
+    try { localStorage.setItem('cart', JSON.stringify(next)); setCart(next); setError(''); }
+    catch { setError('Your bag couldn’t be saved on this device. Please try again.'); }
   }
-
-  // Increase quantity
-  const handleIncrease = (id) => {
-    const updatedCart = cart.map(item => {
-      if(item.id === id){
-        const clamp = Math.min(item.cartQuantity + 1, item.quantity)
-        return { ...item, cartQuantity: clamp }
-      }
-      return item
-    })
-    setCart(updatedCart)
-    localStorage.setItem("cart", JSON.stringify(updatedCart))
-  }
-
-  // Decrease quantity
-  const handleDecrease = (id) => {
-    const updatedCart = cart
-      .map(item => {
-        if(item.id === id) {
-          const clamp = Math.max(1, item.cartQuantity - 1)
-          return { ...item, cartQuantity: clamp }
-        }
-        return item
-      })
-    setCart(updatedCart)
-    localStorage.setItem("cart", JSON.stringify(updatedCart))
-  }
-
-  const handleOnchange = (id, val) => {
-    const num = parseInt(val, 10);
-
-    if (!isNaN(num)) {
-      const updatedCart = cart.map(item => {
-        if (item.id === id) {
-          // Clamp between 1 and product.quantity
-          const clamped = Math.max(1, Math.min(num, item.quantity));
-          return { ...item, cartQuantity: clamped };
-        }
-        return item;
-      });
-
-      setCart(updatedCart);
-      localStorage.setItem("cart", JSON.stringify(updatedCart));
-    }
-  };
-
-  return (
-    <div className='order_cart_cont'>
-      {cart.length === 0 ? (
-        <p>Nothing here</p>
-      ) : (
-        cart.map((item) => (
-          <div className='contain'>
-            <div className='top'>
-              <img src={item.images[0]} alt='img' />
-              <p>{item.name}</p>
-              <div className='quantity'>
-                  <button className='quantity_btn' onClick={() => handleDecrease(item.id)}>-</button>
-                  <input className='quantity_display'
-                  type='number'
-                  onChange={(e) => handleOnchange(item.id, e.target.value)}
-                  value={item.cartQuantity} />
-                  <button className='quantity_btn'onClick={() => handleIncrease(item.id)}>+</button>
-                </div>
-                <button className='delete_btn'>Delete from cart</button>
-            </div>
-            <div className='price'>
-              <p>Ksh. {item.cartQuantity * item.price}</p>
-            </div>
-          </div>
-        ))
-      )}
-    </div>
-  )
+  const total = cart.reduce((sum, item) => sum + productPrice(item) * item.cartQuantity, 0);
+  return <PageShell title="Your bag of good times." description={cart.length ? `${cart.length} ${cart.length === 1 ? 'favourite' : 'favourites'}, ready for another round.` : 'A little space for your next favourite.'} action={<Link className="gh-text-link" to="/home/products">Keep exploring <Icon name="arrow" size={17} /></Link>}><Notice kind="error">{error}</Notice>{!cart.length ? <EmptyState title="The fun starts with a first pick." icon="bag" to="/home/products"><p>Your bag is empty. Let’s find something worth putting the phone down for.</p></EmptyState> : <div className="gh-bag-grid"><div className="gh-bag-items">{cart.map(item => <article className="gh-bag-item gh-panel" key={item.id}><Link className="gh-bag-image" to={`/home/${item.slug}`}>{item.images?.[0] ? <img src={item.images[0]} alt={item.name} /> : <Icon name="box" size={32} />}</Link><div className="gh-bag-item-details"><Link to={`/home/${item.slug}`}><h2>{item.name}</h2></Link><p>{formatPrice(productPrice(item))} each</p>{item.quantity <= 0 ? <span className="gh-stock-empty">Currently out of stock</span> : <QuantityControl value={item.cartQuantity} max={Number(item.quantity)} onChange={value => save(cart.map(product => product.id === item.id ? { ...product, cartQuantity: cartQuantity(value, product.quantity) } : product))} label={`Quantity for ${item.name}`} />}</div><div className="gh-bag-item-end"><strong>{formatPrice(productPrice(item) * item.cartQuantity)}</strong><button className="gh-text-link" onClick={() => save(cart.filter(product => product.id !== item.id))} aria-label={`Remove ${item.name} from bag`}>Remove <Icon name="close" size={14} /></button></div></article>)}</div><aside className="gh-panel gh-bag-summary"><p className="gh-eyebrow">YOUR NEXT GOOD TIME</p><h2>Bag summary</h2><div><span>Items subtotal</span><strong>{formatPrice(total)}</strong></div><p>Prices and stock will be confirmed when ordering opens. Delivery charges are not included.</p><Notice>Online checkout isn’t available yet. Your picks stay saved in this browser.</Notice><Link className="gh-button" to="/home/products">Find more favourites <Icon name="arrow" size={18} /></Link></aside></div>}</PageShell>;
 }
-
-export default Cart

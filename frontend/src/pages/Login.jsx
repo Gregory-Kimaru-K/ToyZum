@@ -1,12 +1,2 @@
-import '../styles/login.css';
 import FormLogin from '../components/body/FormLogin';
-
-function Login() {
-    return (
-        <>
-            <FormLogin />
-        </>
-    );
-}
-
-export default Login;
+export default function Login() { return <FormLogin />; }

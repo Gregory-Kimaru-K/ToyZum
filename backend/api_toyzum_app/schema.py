@@ -14,15 +14,18 @@ class CategoryType(DjangoObjectType):
         fields = ("id", "name", "image", "industry", "slug")
 
 class ProductType(DjangoObjectType):
+    categories = graphene.List(CategoryType)
     images = graphene.List(graphene.String)
     class Meta:
         model = Product
         fields = ("id", "name", "description", "price", "discounted_price",
-                  "images", "quantity", "category", "gender", "seller",
+                  "images", "quantity", "category", "categories", "gender", "seller",
                   "featured", "flash_sale", "verified", "slug")
         
         filter_fields = {
             "category__slug": ["exact", "in"],
+            "categories__slug": ["exact", "in"],
+            "categories__industry__slug": ["exact"],
             "category__industry__slug": ["exact"],
             "featured": ["exact"],
             "flash_sale": ["exact"],
@@ -32,13 +35,20 @@ class ProductType(DjangoObjectType):
             "seller__email": ["exact"]
         }
         interfaces = (graphene.relay.Node,)
+    @classmethod
+    def get_queryset(cls, queryset, info):
+        return queryset.prefetch_related('categories__industry').distinct()
+
+    def resolve_categories(self, info):
+        return self.categories.all()
+
     def resolve_images(self, info):
         return self.images or []
     
 class OrderType(DjangoObjectType):
     class Meta:
         model = Order
-        fields = ("id", "slug", "product", "client", "quantity",
+        fields = ("id", "slug", "product", "client", "ordered_quantity",
                   "communication", "is_canceled", "longitude",
                   "latitude", "status", "town", "county", "country")
 

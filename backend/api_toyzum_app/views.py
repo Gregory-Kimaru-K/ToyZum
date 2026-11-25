@@ -1,26 +1,31 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
-from .serializers import CustomUserSerializer, ProductSerializer, CategorySerializer, OrderSerializer, AdvertSerializer
+from .serializers import CustomUserSerializer, ProductSerializer, CategorySerializer, IndustrySerializer, OrderSerializer, AdvertSerializer
 from .models import CustomUser, Product, Category,Order, Adverts
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from .jwt_serializers import MyTokenObtainPairSerializer
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 
 # Create your views here.
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def custom_user_create(request):
     serializer = CustomUserSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.save()
-        refresh = RefreshToken.for_user(user)
+        refresh = MyTokenObtainPairSerializer.get_token(user)
         return Response({"refresh": str(refresh), "access": str(refresh.access_token)}, status=status.HTTP_201_CREATED)
     
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PUT'])
+@permission_classes([IsAuthenticated])
 def custom_user_update(request, eml):
+    if request.user.email != eml and not request.user.is_superuser:
+        return Response({'detail': 'You cannot edit this account.'}, status=status.HTTP_403_FORBIDDEN)
+
     try:
         user = CustomUser.objects.get(email=eml)
     
@@ -45,7 +50,7 @@ def product_view_create(request):
     
     data = request.data.copy()
     data['seller'] = request.user.id
-    serializer = ProductSerializer(data=data)
+    serializer = ProductSerializer(data=data, context={'request': request})
 
     if serializer.is_valid():
         serializer.save()
@@ -107,6 +112,16 @@ class ProductView(APIView):
             
         except Product.DoesNotExist:
             return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['POST'])
+@permission_classes([IsAdminUser])
+def create_industry(request):
+    serializer = IndustrySerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['POST'])
 @permission_classes([IsAdminUser])
